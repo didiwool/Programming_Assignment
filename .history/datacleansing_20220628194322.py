@@ -13,7 +13,9 @@ def getCountHourly(df, year, hour):
 # get the median, mean, maximum, minimum of the given dataframe according to 'Hourly_Counts' column
 def summaryHourlyCount(df, time):
     result = pd.DataFrame(columns=['time', 'median', 'mean', 'max', 'min'])
+    # print(df)
     df = df.groupby(['Month', 'Mdate'], as_index=False)["Hourly_Counts"].sum()
+    # print(df)
     median = np.median(df["Hourly_Counts"])
     mean = np.mean(df["Hourly_Counts"])
     max = np.max(df["Hourly_Counts"])
