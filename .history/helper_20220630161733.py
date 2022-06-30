@@ -23,4 +23,11 @@ def summaryHourlyCount(df, time):
 
     return result
 
-
+# get the hourly count of pedestrians based on given conditions
+def sum_by_year(filename, condition):
+    df = pd.read_csv(filename)
+    df_2021 = df[df['Year'] == 2021]
+    df_2022 = df[df['Year'] == 2022]
+    count_2021 = df_2021.groupby(condition)["Hourly_Counts"].sum()
+    count_2022 = df_2022.groupby(condition)["Hourly_Counts"].sum()
+    return (count_2021, count_2022)

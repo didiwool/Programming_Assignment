@@ -27,4 +27,4 @@ pedestrianScatter(df, 2021, 2022, 'Rainfall amount (millimetres)')
 pedestrianScatter(df, 2021, 2022, 'Daily global solar exposure (MJ/m*m)')
 
 #answer for question 5
-# pedestrianHist(df, 2021, ['df["Rainfall amount (millimetres)"]>0'])
+pedestrianHist(df, 2021, ['df["Rainfall amount (millimetres)"]>0'])
