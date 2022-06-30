@@ -121,113 +121,20 @@ def pedestrianHistRain(df, year1, year2):
     file2 =  str(year2)+"_busy_daily_rain.png"
     barWithTitle(df2, title2, "Day of week", "mean daily overall pesdestrain count", file2)
 
-
 # the general function of question 8
-def pedestrianHistRainTemp(df, year1, year2, max_temp):
+def pedestrianHistRain(df, year1, year2, max_temp):
     df1 = pd.DataFrame(df[(df.Year == year1) & (df["Rainfall amount (millimetres)"]>0) & (df["Maximum temperature (Degree C)"] < max_temp)].groupby([df.Date_Time.dt.strftime('%y-%m-%d'), df.Day]).agg({'Hourly_Counts':'sum'}))
     df1 = pd.DataFrame(df1[df1.Hourly_Counts != 0]).groupby('Day').mean()
     df1 = dailyCount(df1)
 
-    title1 = "Mean daily overall pedestrain count for each cold, raining day of week in "+str(year1)
-    file1 =  str(year1)+"_busy_daily_rain_cold.png"
+    title1 = "Mean daily overall pedestrain count for each raining day of week in "+str(year1)
+    file1 =  str(year1)+"_busy_daily_rain.png"
     barWithTitle(df1, title1, "Day of week", "mean daily overall pesdestrain count", file1)
 
     df2 = pd.DataFrame(df[(df.Year == year2) & (df["Rainfall amount (millimetres)"]>0) & (df["Maximum temperature (Degree C)"] < max_temp)].groupby([df.Date_Time.dt.strftime('%y-%m-%d'), df.Day]).agg({'Hourly_Counts':'sum'}))
     df2 = pd.DataFrame(df2[df2.Hourly_Counts != 0]).groupby('Day').mean()
     df2 = dailyCount(df2)
 
-    title2 = "Mean daily overall pedestrain count for each cold, raining day of week in "+str(year2)
-    file2 =  str(year2)+"_busy_daily_rain_cold.png"
+    title2 = "Mean daily overall pedestrain count for each raining day of week in "+str(year2)
+    file2 =  str(year2)+"_busy_daily_rain.png"
     barWithTitle(df2, title2, "Day of week", "mean daily overall pesdestrain count", file2)
-
-
-# the general function of question 9
-def timeSeriesSensor(df, year1, year2, month):
-    df1 = pd.DataFrame(df[(df.Year == year1) & (df.Month == month)].groupby([df.Sensor_ID, df.Date_Time.dt.strftime('%m-%d')]).agg({"Hourly_Counts":"sum"}))
-    df2 = pd.DataFrame(df[(df.Year == year2) & (df.Month == month)].groupby([df.Sensor_ID, df.Date_Time.dt.strftime('%m-%d')]).agg({"Hourly_Counts":"sum"}))
-    compare_merged = pd.merge(left=df1, right=df2, left_on=['Sensor_ID','Date_Time'], right_on=['Sensor_ID','Date_Time'])
-    e_distance = defaultdict(float)
-    n = df['Sensor_ID'].max()
-
-    # compute euclidean distance
-    for sensor in range(1,n+1):
-        count_2021 = []
-        count_2022 = []
-        for k in compare_merged.to_dict()['Hourly_Counts_x'].keys():
-            if k[0] == sensor:
-                count_2021.append(compare_merged.to_dict()['Hourly_Counts_x'][k])
-                count_2022.append(compare_merged.to_dict()['Hourly_Counts_y'][k])
-        if count_2021:
-            e_distance[sensor] = np.linalg.norm(np.array(count_2021)-np.array(count_2022))
-            
-    # find maximum
-    max_sensor = max(e_distance, key=e_distance.get) 
-    max_change = e_distance[max_sensor]
-    print("Sensor with the most change is sensor_id = " + str(max_sensor) + ", and the greatest change is " + str(max_change) + ".")
-
-
-
-def modelForCount(df, sensor_id, start_time, end_time):
-        # q10
-    # take variables: 
-    # rainfall of the previous day; 
-    # solar exposure of the previous day; 
-    # max temp of previous day;
-    # pedestrain count from sensor 3 in the past hours
-    # get the count of a nearby 
-    # pedestrain count of sensor 3 the same time yesterday
-    if sensor_id == 1:
-        nearby = 2
-    else:
-        nearby = sensor_id - 1
-
-    train_data = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time) & (df.Time <= end_time-1) & (df.Year ==2022) &(df.Month.isin(["January", "February", "March", "April"])) & (df.Date_Time.dt.strftime('%m-%d') != '01-01')].sort_values(by = ['Date_Time'])['Hourly_Counts'])
-    rain_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time) & (df.Time <= end_time-1) & (df.Year ==2022) &(df.Month.isin(["January", "February", "March", "April"]) ) & (df.Date_Time.dt.strftime('%m-%d') != '04-30')].sort_values(by = ['Date_Time'])['Rainfall amount (millimetres)'])
-    solar_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time) & (df.Time <= end_time-1) & (df.Year ==2022) &(df.Month.isin(["January", "February", "March", "April"]) ) & (df.Date_Time.dt.strftime('%m-%d') != '04-30')].sort_values(by = ['Date_Time'])['Daily global solar exposure (MJ/m*m)'])
-    temp_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time) & (df.Time <= end_time-1) & (df.Year ==2022) &(df.Month.isin(["January", "February", "March", "April"])) & (df.Date_Time.dt.strftime('%m-%d') != '04-30')].sort_values(by = ['Date_Time'])['Maximum temperature (Degree C)'])
-    sensor3_past1 = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time-1) & (df.Time <= end_time-2) & (df.Year ==2022) &(df.Month.isin(["January", "February", "March", "April"])) & (df.Date_Time.dt.strftime('%m-%d') != '01-01')].sort_values(by = ['Date_Time'])['Hourly_Counts'])
-    nearby_past1 = np.array(df[(df.Sensor_ID == nearby) & (df.Time >= start_time-1) & (df.Time <= end_time-2) & (df.Year ==2022) &(df.Month.isin(["January", "February", "March", "April"])) & (df.Date_Time.dt.strftime('%m-%d') != '01-01')].sort_values(by = ['Date_Time'])['Hourly_Counts'])
-    sensor3_pastday = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time) & (df.Time <= end_time-1) & (df.Year ==2022) &(df.Month.isin(["January", "February", "March", "April"])) & (df.Date_Time.dt.strftime('%m-%d') != '04-30')].sort_values(by = ['Date_Time'])['Hourly_Counts'])
-
-    x = np.concatenate((rain_prev.reshape(-1,1), solar_prev.reshape(-1,1), temp_prev.reshape(-1,1), sensor3_past1.reshape(-1,1), nearby_past1.reshape(-1,1), sensor3_pastday.reshape(-1,1)), axis = 1)
-
-    y = train_data
-
-
-    model = LinearRegression().fit(x, y)
-    train_error = model.score(x, y)
-    print(f"coefficient of determination: {train_error}")
-    print(f"intercept: {model.intercept_}")
-    print(f"coefficients: {model.coef_}")
-
-
-    # compute test data
-    rain_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time) & (df.Time <= end_time-1) & (df.Year ==2022) &(df.Month == 'May' ) & (df.Date_Time.dt.strftime('%m-%d') != '05-31')].sort_values(by = ['Date_Time'])['Rainfall amount (millimetres)'])
-    solar_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time) & (df.Time <= end_time-1) & (df.Year ==2022) &(df.Month == 'May' ) & (df.Date_Time.dt.strftime('%m-%d') != '05-31')].sort_values(by = ['Date_Time'])['Daily global solar exposure (MJ/m*m)'])
-    temp_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time) & (df.Time <= end_time-1) & (df.Year ==2022) &(df.Month == 'May' ) & (df.Date_Time.dt.strftime('%m-%d') != '05-31')].sort_values(by = ['Date_Time'])['Maximum temperature (Degree C)'])
-    sensor3_past1 = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time-1) & (df.Time <= end_time-2) & (df.Year ==2022) &(df.Month == 'May' ) & (df.Date_Time.dt.strftime('%m-%d') != '05-01')].sort_values(by = ['Date_Time'])['Hourly_Counts'])
-    nearby_past1 = np.array(df[(df.Sensor_ID == nearby) & (df.Time >= start_time-1) & (df.Time <= end_time-2) & (df.Year ==2022) &(df.Month == 'May' ) & (df.Date_Time.dt.strftime('%m-%d') != '05-01')].sort_values(by = ['Date_Time'])['Hourly_Counts'])
-    sensor3_pastday = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time) & (df.Time <= end_time-1) & (df.Year ==2022) &(df.Month == 'May' ) & (df.Date_Time.dt.strftime('%m-%d') != '05-31')].sort_values(by = ['Date_Time'])['Hourly_Counts'])
-
-    x_test = np.concatenate((rain_prev.reshape(-1,1), solar_prev.reshape(-1,1), temp_prev.reshape(-1,1), sensor3_past1.reshape(-1,1), nearby_past1.reshape(-1,1), sensor3_pastday.reshape(-1,1)), axis = 1)
-
-    y_test = np.array(df[(df.Sensor_ID == 3) & (df.Time == 12) & (df.Year ==2022) &(df.Month == 'May' ) & (df.Date_Time.dt.strftime('%m-%d') != '05-01')].sort_values(by = ['Date_Time'])['Hourly_Counts'])
-
-    y_predict = model.predict(x_test)
-    test_error = model.score(x_test, y_test)
-    mean_sq_e = mean_squared_error(y_test, y_predict)
-
-    print(f"mean square error of the model: {mean_sq_e}")
-
-
-    # compute absolute error
-    dates = df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time) & (df.Time <= end_time-1) & (df.Year ==2022) &(df.Month == 'May') & (df.Date_Time.dt.strftime('%m-%d') != '05-01')][['Date_Time','Day']]
-    absolute_error = {"Monday":0, "Tuesday":0, "Wednesday":0, "Thursday":0, "Friday":0, "Saturday":0, "Sunday":0}
-    for i in range(len(y_test)):
-        absolute_error[dates.iloc[i,]['Day']] += np.abs(y_test[i] - y_predict[i])
-
-    for k in absolute_error.keys():
-        absolute_error[k] = absolute_error[k]/dates[dates['Day']==k].count()[0]
-
-    return absolute_error
-

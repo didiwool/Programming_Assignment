@@ -26,6 +26,7 @@ def summaryHourlyCount(df, time):
 
 # data cleansing helper for question 5, 7, 8
 def dailyCount(df):
+    df = df.groupby('Day').mean()
     df = pd.DataFrame(df.to_dict()['Hourly_Counts'].items(), columns= ["Day","Hourly Counts"])
     df.Day = df.Day.astype("category")
     df.Day = df.Day.cat.set_categories(WEEK)

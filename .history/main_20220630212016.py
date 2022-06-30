@@ -42,5 +42,4 @@ pedestrianHistRainTemp(df, 2021, 2022, 20)
 timeSeriesSensor(df, 2021, 2022, 'May')
 
 #answer for question 10
-result = modelForCount(df, 3, 12, 13)
-print(result)
+modelForCount(df, 3, 12, 13)

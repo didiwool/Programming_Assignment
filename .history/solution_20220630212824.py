@@ -174,7 +174,6 @@ def modelForCount(df, sensor_id, start_time, end_time):
     # solar exposure of the previous day; 
     # max temp of previous day;
     # pedestrain count from sensor 3 in the past hours
-    # get the count of a nearby 
     # pedestrain count of sensor 3 the same time yesterday
     if sensor_id == 1:
         nearby = 2
