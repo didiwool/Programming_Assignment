@@ -64,7 +64,7 @@ def pedestrianStats(dataframe, year, hours):
     return new_df
 
 
-# the general function of question 2, 3 and 4
+# the generalized function of question 2, 3 and 4
 # y-axis is the hourly_counts of pedestrians
 # x-aixs is treated as a variable, could be rainfall, temperature and solar
 def pedestrianScatter(df, year1, year2, x_axis):

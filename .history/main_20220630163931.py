@@ -12,16 +12,4 @@ solar_file = "solar-all-years/IDCJAC0016_086338_1800_Data.csv"
 
 #  data cleansing part
 df = data_cleansing(count_file, rain_file, temp_file, solar_file)
-
-# answer for question 1
-df_q1 = pedestrianStats(df, 2022, [8, 13, 17])
-print(df_q1)
-
-# answer for question 2
-pedestrianScatter(df, 2021, 2022, 'Maximum temperature (Degree C)')
-
-# answer for question 3
-pedestrianScatter(df, 2021, 2022, 'Rainfall amount (millimetres)')
-
-# answer for question 4
-pedestrianScatter(df, 2021, 2022, 'Daily global solar exposure (MJ/m*m)')
+print(df)

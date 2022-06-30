@@ -64,15 +64,13 @@ def pedestrianStats(dataframe, year, hours):
     return new_df
 
 
-# the general function of question 2, 3 and 4
-# y-axis is the hourly_counts of pedestrians
-# x-aixs is treated as a variable, could be rainfall, temperature and solar
+# the generalized function of question 2, 3 and 4
 def pedestrianScatter(df, year1, year2, x_axis):
     daily_overall_2021 = pd.DataFrame(df[df.Year == year1].groupby(df.Date_Time.dt.strftime('%y-%m-%d')).agg({'Hourly_Counts':'sum',x_axis:'mean'}))  
     daily_overall_2022 = pd.DataFrame(df[df.Year == year2].groupby(df.Date_Time.dt.strftime('%y-%m-%d')).agg({'Hourly_Counts':'sum',x_axis:'mean'}))  
 
-    daily_overall_2021.plot.scatter(x = x_axis, y = "Hourly_Counts", title = x_axis+" vs pedestrian in "+str(year1))
-    plt.savefig(str(year1)+'_scatter_plot'+x_axis+'.png')
+    daily_overall_2021.plot.scatter(x = x_axis, y = "Hourly_Counts", title = x_axis+" vs pedestrian in 2021")
+    plt.savefig(year1+'_scatter_plot.png')
 
-    daily_overall_2022.plot.scatter(x = x_axis, y = "Hourly_Counts", title = x_axis+" vs pedestrian in "+str(year2))
-    plt.savefig(str(year2)+'_scatter_plot'+x_axis+'.png')
+    daily_overall_2022.plot.scatter(x = x_axis, y = "Hourly_Counts", title = x_axis+" vs pedestrian in 2022")
+    plt.savefig(year2+'_scatter_plot.png')

@@ -13,7 +13,6 @@ from sklearn.metrics import mean_squared_error
 WEEKDAY = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-# gerenal function for data cleansing
 def data_cleansing(count_file, rain_file, temp_file, solar_file):
     # read files
     pedestrain_df = pd.read_csv(count_file)
@@ -51,28 +50,3 @@ def data_cleansing(count_file, rain_file, temp_file, solar_file):
 
     return df
 
-
-# the generalized function of question 1
-def pedestrianStats(dataframe, year, hours):
-    new_df = pd.DataFrame(columns=['time', 'median', 'mean', 'max', 'min'])
-
-    for time in hours:
-        hourly_df = getCountHourly(dataframe, year, time)
-        result = summaryHourlyCount(hourly_df, time)
-        new_df = pd.concat([new_df, result], ignore_index=True)
-
-    return new_df
-
-
-# the general function of question 2, 3 and 4
-# y-axis is the hourly_counts of pedestrians
-# x-aixs is treated as a variable, could be rainfall, temperature and solar
-def pedestrianScatter(df, year1, year2, x_axis):
-    daily_overall_2021 = pd.DataFrame(df[df.Year == year1].groupby(df.Date_Time.dt.strftime('%y-%m-%d')).agg({'Hourly_Counts':'sum',x_axis:'mean'}))  
-    daily_overall_2022 = pd.DataFrame(df[df.Year == year2].groupby(df.Date_Time.dt.strftime('%y-%m-%d')).agg({'Hourly_Counts':'sum',x_axis:'mean'}))  
-
-    daily_overall_2021.plot.scatter(x = x_axis, y = "Hourly_Counts", title = x_axis+" vs pedestrian in "+str(year1))
-    plt.savefig(str(year1)+'_scatter_plot'+x_axis+'.png')
-
-    daily_overall_2022.plot.scatter(x = x_axis, y = "Hourly_Counts", title = x_axis+" vs pedestrian in "+str(year2))
-    plt.savefig(str(year2)+'_scatter_plot'+x_axis+'.png')

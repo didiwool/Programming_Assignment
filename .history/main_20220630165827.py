@@ -19,9 +19,3 @@ print(df_q1)
 
 # answer for question 2
 pedestrianScatter(df, 2021, 2022, 'Maximum temperature (Degree C)')
-
-# answer for question 3
-pedestrianScatter(df, 2021, 2022, 'Rainfall amount (millimetres)')
-
-# answer for question 4
-pedestrianScatter(df, 2021, 2022, 'Daily global solar exposure (MJ/m*m)')
