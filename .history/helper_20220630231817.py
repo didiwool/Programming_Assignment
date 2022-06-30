@@ -34,7 +34,7 @@ def dailyCount(df):
     return df
 
 # function for preparing the train data or test data in Q10
-def dataForCount(df, nearby, sensor_id, start_time, end_time, usage):
+def dataForCount(df, sensor_id, start_time, end_time, usage):
     if usage == 'train':
         rain_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time) & (df.Time <= end_time-1) & (df.Year ==2022) &(df.Month.isin(["January", "February", "March", "April"]) ) & (df.Date_Time.dt.strftime('%m-%d') != '04-30')].sort_values(by = ['Date_Time'])['Rainfall amount (millimetres)'])
         solar_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time) & (df.Time <= end_time-1) & (df.Year ==2022) &(df.Month.isin(["January", "February", "March", "April"]) ) & (df.Date_Time.dt.strftime('%m-%d') != '04-30')].sort_values(by = ['Date_Time'])['Daily global solar exposure (MJ/m*m)'])

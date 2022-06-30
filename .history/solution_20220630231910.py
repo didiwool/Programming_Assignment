@@ -183,7 +183,9 @@ def modelForCount(df, sensor_id, start_time, end_time):
 
     train_data = np.array(df[(df.Sensor_ID == sensor_id) & (df.Time >= start_time) & (df.Time <= end_time-1) & (df.Year ==2022) &(df.Month.isin(["January", "February", "March", "April"])) & (df.Date_Time.dt.strftime('%m-%d') != '01-01')].sort_values(by = ['Date_Time'])['Hourly_Counts'])
     (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1, sensor3_pastday) = dataForCount(df, nearby, sensor_id, start_time, end_time, 'train')
+
     x = np.concatenate((rain_prev.reshape(-1,1), solar_prev.reshape(-1,1), temp_prev.reshape(-1,1), sensor3_past1.reshape(-1,1), nearby_past1.reshape(-1,1), sensor3_pastday.reshape(-1,1)), axis = 1)
+
     y = train_data
 
 
@@ -196,7 +198,9 @@ def modelForCount(df, sensor_id, start_time, end_time):
 
     # compute test data
     (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1, sensor3_pastday) = dataForCount(df, nearby, sensor_id, start_time, end_time, 'test')
+
     x_test = np.concatenate((rain_prev.reshape(-1,1), solar_prev.reshape(-1,1), temp_prev.reshape(-1,1), sensor3_past1.reshape(-1,1), nearby_past1.reshape(-1,1), sensor3_pastday.reshape(-1,1)), axis = 1)
+
     y_test = np.array(df[(df.Sensor_ID == 3) & (df.Time == 12) & (df.Year ==2022) &(df.Month == 'May' ) & (df.Date_Time.dt.strftime('%m-%d') != '05-01')].sort_values(by = ['Date_Time'])['Hourly_Counts'])
 
     y_predict = model.predict(x_test)
