@@ -61,8 +61,9 @@ def pedestrianStats(dataframe, year, hours):
         hourly_df = getCountHourly(dataframe, year, time)
         result = summaryHourlyCount(hourly_df, time)
         new_df = pd.concat([new_df, result], ignore_index=True)
+        
 
-    return new_df
+    return tabulate(new_df, headers='keys', tablefmt='psql')
 
 
 # the general function of question 2, 3 and 4
