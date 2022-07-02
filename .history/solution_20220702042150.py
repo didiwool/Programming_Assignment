@@ -272,4 +272,4 @@ def unusualDay(df, sensor_id):
         X_ = np.linspace(new_df['Time'].min(), new_df['Time'].max(), 500)
         Y_ = X_Y_Spline(X_)
         plt.plot(X_, Y_, c= 'lightblue')
-        plt.savefig('unusual_daily_plot_'+str(i)+'.png')
+        plt.savefig('unusual_daily_plot_'+i+'.png')

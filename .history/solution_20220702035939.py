@@ -241,35 +241,34 @@ def unusualDay(df, sensor_id):
     new_df = new_df.groupby(['Month', 'Mdate', 'Sensor_ID', 'Day', 'Year', 'Rainfall amount (millimetres)', 'Maximum temperature (Degree C)', 'Daily global solar exposure (MJ/m*m)']).agg({'distance':'sum'}).reset_index()
     result = new_df.sort_values(["distance", "Month", "Mdate"], ascending=False).reset_index().head(3)
     
-    for i in range(3):
-        month = result.iloc[i, 1]
-        mdate = result.iloc[i, 2].astype(int)
-        lastday = mdate - 1
-        lastmonth = month
+    month = result.iloc[0, 1]
+    mdate = result.iloc[0, 2].astype(int)
+    lastday = mdate - 1
+    lastmonth = month
 
-        if mdate == 1:
-            if month in ['January', 'May']:
-                lastday = 30
-            elif month == 'February':
-                lastday = 28
-            else:
-                lastday = 31
+    if mdate == 1:
+        if month in ['January', 'May']:
+            lastday = 30
+        elif month == 'February':
+            lastday = 28
+        else:
+            lastday = 31
 
 
-        train_data = np.array(df[(df.Sensor_ID == sensor_id) & (df.Year ==2022) & (df.Month == month) & (df.Mdate == mdate)].sort_values(by = ['Date_Time'])['Hourly_Counts'])
-        rain_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Year ==2022) & (df.Month == lastmonth) & (df.Mdate == lastday)].sort_values(by = ['Date_Time'])['Rainfall amount (millimetres)'])
-        solar_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Year ==2022) & (df.Month == lastmonth) & (df.Mdate == lastday)].sort_values(by = ['Date_Time'])['Daily global solar exposure (MJ/m*m)'])
-        temp_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Year ==2022) & (df.Month == lastmonth) & (df.Mdate == lastday)].sort_values(by = ['Date_Time'])['Maximum temperature (Degree C)'])
-        sensor2_pastday = np.array(df[(df.Sensor_ID == nearby) & (df.Year ==2022) & (df.Month == lastmonth) & (df.Mdate == lastday)].sort_values(by = ['Date_Time'])['Hourly_Counts'])
-        sensor3_pastday = np.array(df[(df.Sensor_ID == sensor_id) & (df.Year ==2022) & (df.Month == lastmonth) & (df.Mdate == lastday)].sort_values(by = ['Date_Time'])['Hourly_Counts'])
+    train_data = np.array(df[(df.Sensor_ID == sensor_id) & (df.Year ==2022) & (df.Month == month) & (df.Mdate == mdate)].sort_values(by = ['Date_Time'])['Hourly_Counts'])
+    rain_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Year ==2022) & (df.Month == lastmonth) & (df.Mdate == lastday)].sort_values(by = ['Date_Time'])['Rainfall amount (millimetres)'])
+    solar_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Year ==2022) & (df.Month == lastmonth) & (df.Mdate == lastday)].sort_values(by = ['Date_Time'])['Daily global solar exposure (MJ/m*m)'])
+    temp_prev = np.array(df[(df.Sensor_ID == sensor_id) & (df.Year ==2022) & (df.Month == lastmonth) & (df.Mdate == lastday)].sort_values(by = ['Date_Time'])['Maximum temperature (Degree C)'])
+    sensor2_pastday = np.array(df[(df.Sensor_ID == nearby) & (df.Year ==2022) & (df.Month == lastmonth) & (df.Mdate == lastday)].sort_values(by = ['Date_Time'])['Hourly_Counts'])
+    sensor3_pastday = np.array(df[(df.Sensor_ID == sensor_id) & (df.Year ==2022) & (df.Month == lastmonth) & (df.Mdate == lastday)].sort_values(by = ['Date_Time'])['Hourly_Counts'])
 
-        x = np.concatenate((rain_prev.reshape(-1,1), solar_prev.reshape(-1,1), temp_prev.reshape(-1,1), sensor2_pastday.reshape(-1,1), sensor3_pastday.reshape(-1,1)), axis = 1)
-        y = train_data
-        new_df = df[(df.Sensor_ID == 3) & (df.Year ==2022) & (df.Month == month) & (df.Mdate == mdate)]
-        new_df['predicted'] = model.predict(x)
-        new_df.plot.scatter(x = 'Time', y = 'Hourly_Counts', c = 'green')
-        X_Y_Spline = make_interp_spline(new_df['Time'], new_df['predicted']) 
-        X_ = np.linspace(new_df['Time'].min(), new_df['Time'].max(), 500)
-        Y_ = X_Y_Spline(X_)
-        plt.plot(X_, Y_, c= 'lightblue')
-        plt.savefig('unusual_daily_plot_'+str(i)+'.png')
+    x = np.concatenate((rain_prev.reshape(-1,1), solar_prev.reshape(-1,1), temp_prev.reshape(-1,1), sensor2_pastday.reshape(-1,1), sensor3_pastday.reshape(-1,1)), axis = 1)
+    y = train_data
+    new_df = df[(df.Sensor_ID == 3) & (df.Year ==2022) & (df.Month == month) & (df.Mdate == mdate)]
+    new_df['predicted'] = model.predict(x)
+    plt.scatter(x = new_df['Time'], y = new_df['Hourly_Counts'], c = 'green')
+    X_Y_Spline = make_interp_spline(new_df['Time'], new_df['predicted']) 
+    X_ = np.linspace(new_df['Time'].min(), new_df['Time'].max(), 500)
+    Y_ = X_Y_Spline(X_)
+    plt.plot(X_, Y_, c= 'lightblue')
+    plt.savefig('plot_1.png')
