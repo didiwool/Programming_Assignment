@@ -9,6 +9,8 @@ from collections import defaultdict
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from scipy.interpolate import make_interp_spline
+import seaborn as sns
+
 
 
 # define constant
@@ -369,3 +371,53 @@ def investCovidTravel(df, file1, file2):
     # plot and save covid-19 vs pedestrain
     timeSeriesForTwo(monthly_overall, "VIC", "Hourly_Counts", 'Average daily covid-19 cases', 'Average daily pedestrain count', "Time serie data for monthly covid-19 cases and average pedestrain count")
 
+
+
+def investLockdown(df):
+    """
+    Utilize Victoria lockdown history from 2021-1-1 to 2021-10-21 to visualize impact of lockdown on pedestrain counts in Melbourne.
+    Plot the resulting visualizations and save them.
+    """
+    # generate array-like dataframe of daily pedestrain counts from 2021-01-01 to 2021-10-21 for plotting heat map
+    df_array = df[df['Date_Time'] < '2021-10-21'].groupby(['Date_Time', 'Time'], as_index = False).agg(sum)
+    df_array = pd.DataFrame(df_array.groupby('Date_Time', as_index = False).agg(list)[['Date_Time','Hourly_Counts']])
+    df_heat = pd.DataFrame(list(df_array['Hourly_Counts']), columns=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23], index = df_array.Date_Time)
+
+    # plot heat map
+    fig, (ax0, ax) = plt.subplots(ncols=2, figsize=(8, 8), gridspec_kw={'width_ratios': [1, 7]})
+    ax = sns.heatmap(df_heat, cmap="PuBu")
+    ax0.axhspan(pd.to_datetime('2021-01-01'),pd.to_datetime('2021-02-11'), facecolor='w', alpha=0.3, xmin = 0)
+    ax0.axhspan(pd.to_datetime('2021-02-12'), pd.to_datetime('2021-02-17'), facecolor='r', alpha=0.3)
+    ax0.axhspan(pd.to_datetime('2021-02-18'),pd.to_datetime('2021-05-26'), facecolor='w', alpha=0.3)
+    ax0.axhspan(pd.to_datetime('2021-05-27'),pd.to_datetime('2021-06-10'), facecolor='r', alpha=0.3)
+    ax0.axhspan(pd.to_datetime('2021-06-11'),pd.to_datetime('2021-07-14'), facecolor='w', alpha=0.3)
+    ax0.axhspan(pd.to_datetime('2021-07-15'),pd.to_datetime('2021-07-20'), facecolor='r', alpha=0.3)
+    ax0.axhspan(pd.to_datetime('2021-07-21'),pd.to_datetime('2021-08-04'), facecolor='w', alpha=0.3)
+    ax0.axhspan(pd.to_datetime('2021-08-05'),pd.to_datetime('2021-10-21'), facecolor='r', alpha=0.3)
+    ax0.invert_yaxis()
+    ax0.margins(y=0)
+    ax.axes.get_yaxis().set_visible(False)
+    ax0.axes.get_xaxis().set_visible(False)
+    ax0.set_xlabel('Lockdown (red)')
+    ax0.set_ylabel('Date')
+    ax.set_xlabel('Hours in a day')
+    ax.yaxis.tick_right()
+    fig.tight_layout()
+    ax.title.set_text("Hourly pedestrain counts from 2021-01 to 2021-10")
+    ax0.title.set_text("Lockdown")
+    plt.savefig("lockdown_impace_heat_map.png", bbox_inches='tight')
+
+
+    # time series plot 
+    df_time_series = df
+    df_time_series['Date_Time'] = pd.to_datetime(df_time_series['Date_Time'])
+    df_time_series = df_time_series[df_time_series['Date_Time'] < '2021-10-21'].groupby(df_time_series['Date_Time']).agg({'Hourly_Counts':'sum'})
+    df_time_series.reset_index(inplace = True)
+
+    df_time_series.plot(x = "Date_Time", y = "Hourly_Counts", title = "Covid-19 cases versus pedestrain (Red = Victoria under lockdown)", figsize=(12, 5))
+    p = plt.axvspan('2021-02-12','2021-02-17', facecolor='r', alpha=0.3)
+    p = plt.axvspan('2021-05-27','2021-06-10', facecolor='r', alpha=0.3)
+    p = plt.axvspan('2021-07-15','2021-07-20', facecolor='r', alpha=0.3)
+    p = plt.axvspan('2021-08-05','2021-10-21', facecolor='r', alpha=0.3)
+
+    plt.savefig("lockdown_impace_time_series.png", bbox_inches='tight')
