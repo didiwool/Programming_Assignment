@@ -199,6 +199,7 @@ def modelForCount(df, sensor_id, start_time, end_time):
     print(f"intercept: {model.intercept_}")
     print(f"coefficients: {model.coef_}")
 
+
     result = {}
     # compute test data
     for day in WEEK:
@@ -210,6 +211,7 @@ def modelForCount(df, sensor_id, start_time, end_time):
         # test_error = model.score(x_test, y_test)
         mean_sq_e = mean_squared_error(y_test, y_predict)
         result[day] = mean_sq_e
+
 
     return result
 
@@ -297,7 +299,7 @@ def sensorCorrelation(df, sensor1, sensor2):
 
     compare_merged = pd.merge(left=sensor3, right=sensor9, left_on=['Time','Date_Time'], right_on=['Time','Date_Time'])
     pearson_coef = defaultdict(float)
-
+    
     # compute euclidean distance
     pearson_coef = pearsonDistance(pearson_coef, compare_merged)          
     # find maximum

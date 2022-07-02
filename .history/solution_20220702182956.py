@@ -1,5 +1,4 @@
 from helper import *
-from collections import defaultdict
 from graphplot import *
 import pandas as pd
 import numpy as np
@@ -199,17 +198,19 @@ def modelForCount(df, sensor_id, start_time, end_time):
     print(f"intercept: {model.intercept_}")
     print(f"coefficients: {model.coef_}")
 
+
     result = {}
     # compute test data
     for day in WEEK:
         (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1, sensor3_pastday) = testdataForCount(df, nearby, sensor_id, start_time, end_time, day)
         x_test = np.concatenate((rain_prev.reshape(-1,1), solar_prev.reshape(-1,1), temp_prev.reshape(-1,1), sensor3_past1.reshape(-1,1), nearby_past1.reshape(-1,1), sensor3_pastday.reshape(-1,1)), axis = 1)
-        y_test = np.array(df[(df.Day == day) & (df.Sensor_ID == 3) & (df.Time == 12) & (df.Year ==2022) &(df.Month == 'May' ) & (df.Date_Time.dt.strftime('%m-%d') != '05-01')].sort_values(by = ['Date_Time'])['Hourly_Counts'])
+        y_test = np.array(df[(df.Sensor_ID == 3) & (df.Time == 12) & (df.Year ==2022) &(df.Month == 'May' ) & (df.Date_Time.dt.strftime('%m-%d') != '05-01')].sort_values(by = ['Date_Time'])['Hourly_Counts'])
 
         y_predict = model.predict(x_test)
         # test_error = model.score(x_test, y_test)
         mean_sq_e = mean_squared_error(y_test, y_predict)
         result[day] = mean_sq_e
+
 
     return result
 
@@ -269,36 +270,3 @@ def unusualDay(df, sensor_id):
         plt.plot(X_, Y_, c= 'lightblue')
         plt.savefig('unusual_daily_plot_'+str(i)+'.png')
 
-
-
-def dailyDifference(df, sensor1, sensor2):
-    sensor3 = df[(df.Year == 2022) & (df.Month == 'May') & (df.Sensor_ID == sensor1)][["Time", "Date_Time", "Hourly_Counts"]]
-    sensor3["Date_Time"] = sensor3.Date_Time.dt.strftime('%m-%d')
-
-    sensor9 = df[(df.Year == 2022) & (df.Month == 'May') & (df.Sensor_ID == sensor2)][["Time", "Date_Time", "Hourly_Counts"]]
-    sensor9["Date_Time"] = sensor9.Date_Time.dt.strftime('%m-%d')
-
-    compare_merged = pd.merge(left=sensor3, right=sensor9, left_on=['Time','Date_Time'], right_on=['Time','Date_Time'])
-    e_distance = defaultdict(float)
-
-    # compute euclidean distance
-    e_distance = computeDistance(e_distance, compare_merged)
-    # find maximum
-    diffConclusion(e_distance)
-
-
-
-def sensorCorrelation(df, sensor1, sensor2):
-    sensor3 = df[(df.Year == 2022) & (df.Month == 'May') & (df.Sensor_ID == sensor1) & (df.Time >= 9) & (df.Time <= 17) & (df.Day.isin(WEEKDAY))][["Time", "Date_Time", "Hourly_Counts"]]
-    sensor3["Date_Time"] = sensor3.Date_Time.dt.strftime('%m-%d')
-
-    sensor9 = df[(df.Year == 2022) & (df.Month == 'May') & (df.Sensor_ID == sensor2) & (df.Time >= 9) & (df.Time <= 17) & (df.Day.isin(WEEKDAY))][["Time", "Date_Time", "Hourly_Counts"]]
-    sensor9["Date_Time"] = sensor9.Date_Time.dt.strftime('%m-%d')
-
-    compare_merged = pd.merge(left=sensor3, right=sensor9, left_on=['Time','Date_Time'], right_on=['Time','Date_Time'])
-    pearson_coef = defaultdict(float)
-
-    # compute euclidean distance
-    pearson_coef = pearsonDistance(pearson_coef, compare_merged)          
-    # find maximum
-    diffConclusion(pearson_coef)

@@ -73,21 +73,3 @@ def computeDistance(distance, merge_df):
         distance[day] = np.linalg.norm(np.array(count_sensor1)-np.array(count_sensor2))
 
     return distance
-
-
-def pearsonDistance(pearson_coef, compare_merged):
-    for day in compare_merged['Date_Time'].unique():
-        count_sensor1 = compare_merged[compare_merged.Date_Time == day]['Hourly_Counts_x']
-        count_sensor2 = compare_merged[compare_merged.Date_Time == day]['Hourly_Counts_y']     
-        pearson_coef[day] = np.abs(np.corrcoef(np.array(count_sensor1),np.array(count_sensor2))[1,0])
-    
-    return pearson_coef
-
-
-def diffConclusion(e_distance):
-    max_day = max(e_distance, key=e_distance.get) 
-    max_change = e_distance[max_day]
-    min_day = min(e_distance, key=e_distance.get) 
-    min_change = e_distance[min_day]
-    print("Day with the most change is " + str(max_day) + ", and the greatest change is " + str(round(max_change)) + ".")
-    print("Day with the least change is " + str(min_day) + ", and the least change is " + str(round(min_change)) + ".")

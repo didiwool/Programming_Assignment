@@ -199,6 +199,7 @@ def modelForCount(df, sensor_id, start_time, end_time):
     print(f"intercept: {model.intercept_}")
     print(f"coefficients: {model.coef_}")
 
+
     result = {}
     # compute test data
     for day in WEEK:
@@ -210,6 +211,7 @@ def modelForCount(df, sensor_id, start_time, end_time):
         # test_error = model.score(x_test, y_test)
         mean_sq_e = mean_squared_error(y_test, y_predict)
         result[day] = mean_sq_e
+
 
     return result
 
@@ -272,7 +274,7 @@ def unusualDay(df, sensor_id):
 
 
 def dailyDifference(df, sensor1, sensor2):
-    sensor3 = df[(df.Year == 2022) & (df.Month == 'May') & (df.Sensor_ID == sensor1)][["Time", "Date_Time", "Hourly_Counts"]]
+    sensor3 = df[(df.Year == 2022) & (df.Month == 'May') & (df.Sensor_ID == snesor1)][["Time", "Date_Time", "Hourly_Counts"]]
     sensor3["Date_Time"] = sensor3.Date_Time.dt.strftime('%m-%d')
 
     sensor9 = df[(df.Year == 2022) & (df.Month == 'May') & (df.Sensor_ID == sensor2)][["Time", "Date_Time", "Hourly_Counts"]]
@@ -282,23 +284,16 @@ def dailyDifference(df, sensor1, sensor2):
     e_distance = defaultdict(float)
 
     # compute euclidean distance
-    e_distance = computeDistance(e_distance, compare_merged)
-    # find maximum
-    diffConclusion(e_distance)
-
-
-
-def sensorCorrelation(df, sensor1, sensor2):
-    sensor3 = df[(df.Year == 2022) & (df.Month == 'May') & (df.Sensor_ID == sensor1) & (df.Time >= 9) & (df.Time <= 17) & (df.Day.isin(WEEKDAY))][["Time", "Date_Time", "Hourly_Counts"]]
-    sensor3["Date_Time"] = sensor3.Date_Time.dt.strftime('%m-%d')
-
-    sensor9 = df[(df.Year == 2022) & (df.Month == 'May') & (df.Sensor_ID == sensor2) & (df.Time >= 9) & (df.Time <= 17) & (df.Day.isin(WEEKDAY))][["Time", "Date_Time", "Hourly_Counts"]]
-    sensor9["Date_Time"] = sensor9.Date_Time.dt.strftime('%m-%d')
-
-    compare_merged = pd.merge(left=sensor3, right=sensor9, left_on=['Time','Date_Time'], right_on=['Time','Date_Time'])
-    pearson_coef = defaultdict(float)
-
-    # compute euclidean distance
-    pearson_coef = pearsonDistance(pearson_coef, compare_merged)          
-    # find maximum
-    diffConclusion(pearson_coef)
+    for day in compare_merged['Date_Time'].unique():
+        count_sensor3 = compare_merged[compare_merged.Date_Time == day]['Hourly_Counts_x']
+        count_sensor9 = compare_merged[compare_merged.Date_Time == day]['Hourly_Counts_y']
+        
+        e_distance[day] = np.linalg.norm(np.array(count_sensor3)-np.array(count_sensor9))
+            
+        # find maximum
+        max_day = max(e_distance, key=e_distance.get) 
+        max_change = e_distance[max_day]
+        min_day = min(e_distance, key=e_distance.get) 
+        min_change = e_distance[min_day]
+        print("Day with the most change is " + str(max_day) + ", and the greatest change is " + str(round(max_change)) + ".")
+        print("Day with the least change is " + str(min_day) + ", and the least change is " + str(round(min_change)) + ".")

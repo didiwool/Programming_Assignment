@@ -50,6 +50,3 @@ unusualDay(df, 3)
 
 # answer for question 12
 dailyDifference(df, 3, 9)
-
-# answer for question 13
-sensorCorrelation(df, 3, 9)
