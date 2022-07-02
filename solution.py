@@ -61,7 +61,7 @@ def pedestrianStats(dataframe, year, hours):
         hourly_df = getCountHourly(dataframe, year, time)
         result = summaryHourlyCount(hourly_df, time)
         new_df = pd.concat([new_df, result], ignore_index=True)
-        
+
 
     return tabulate(new_df, headers='keys', tablefmt='psql')
 
@@ -74,9 +74,13 @@ def pedestrianScatter(df, year1, year2, x_axis):
     daily_overall_2022 = pd.DataFrame(df[df.Year == year2].groupby(df.Date_Time.dt.strftime('%y-%m-%d')).agg({'Hourly_Counts':'sum',x_axis:'mean'}))  
 
     daily_overall_2021.plot.scatter(x = x_axis, y = "Hourly_Counts", title = x_axis+" vs pedestrian in "+str(year1))
+    plt.tight_layout()
+    bbox_inches = 'tight'
     plt.savefig(str(year1)+'_scatter_plot_'+x_axis[:20]+'.png')
 
     daily_overall_2022.plot.scatter(x = x_axis, y = "Hourly_Counts", title = x_axis+" vs pedestrian in "+str(year2))
+    plt.tight_layout()
+    bbox_inches = 'tight'
     plt.savefig(str(year2)+'_scatter_plot_'+x_axis[:20]+'.png')
 
 
@@ -100,7 +104,7 @@ def pedestrianHist(df, year1, year2):
 # general function of question 6
 def sensorHist(df, year, start_no, end_no):
     new_df= pd.DataFrame(pd.DataFrame(df[(df.Year == year) & (df.Sensor_ID.isin(range(start_no, end_no+1)))].groupby([df.Sensor_ID, df.Date_Time.dt.strftime('%y-%m-%d')]).agg({'Hourly_Counts':'sum'}))).groupby('Sensor_ID').mean()
-    title = "Mean daily overall pedestrain count for each day of week in "+str(year)
+    title = "Mean daily overall pedestrain count for sensor 1-20 in "+str(year)
     file =  str(year)+"_busy_sensor.png"
     barWithTitle(new_df, title, "sensor ID", "mean daily overall pesdestrain count", file)
 

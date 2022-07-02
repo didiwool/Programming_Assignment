@@ -7,4 +7,5 @@ def barWithTitle(df, title, x, y, fname):
     plt.title(title)
     plt.xlabel(x)
     plt.ylabel(y)
-    plt.savefig(fname)
+    plt.tight_layout()
+    plt.savefig(fname, bbox_inches='tight')
