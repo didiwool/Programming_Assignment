@@ -170,7 +170,23 @@ def timeSeriesSensor(df, year1, year2, month):
     # find maximum
     max_sensor = max(e_distance, key=e_distance.get) 
     max_change = e_distance[max_sensor]
-    print("Sensor with the most change is sensor_id = " + str(max_sensor) + ", and the greatest change is " + str(max_change) + ".")
+    max_sensor_name = df[df.Sensor_ID == max_sensor]['Sensor_Name'].unique()[0]
+    print("Sensor with the most change is sensor_id = " + str(max_sensor) + ", and the greatest change is " + str(max_change) + ". The name of the sensor is: " + max_sensor_name)
+
+    # plot and save scatter plot of max sensor
+    count_2021_max_sensor = pd.DataFrame(df[(df.Sensor_ID == max_sensor) & (df.Month == month) & (df.Year == year1)].groupby(df.Date_Time.dt.strftime('%m-%d')).sum()['Hourly_Counts'])
+    count_2021_max_sensor.reset_index()
+    count_2022_max_sensor = pd.DataFrame(df[(df.Sensor_ID == max_sensor) & (df.Month == month) & (df.Year == year2)].groupby(df.Date_Time.dt.strftime('%m-%d')).sum()['Hourly_Counts'])
+    count_2021_max_sensor.reset_index()
+
+    title1 = "Bar plot for sensor with maximum change in " + month + " " + str(year1)
+    file1 =  str(year1) + "_max_change_sensor.png"
+    barWithTitle(count_2021_max_sensor, title1, "Date", "Total daily overall pesdestrain count", file1)
+
+    title2 = "Bar plot for sensor with maximum change in " + month + " " + str(year2)
+    file2 =  str(year2) + "_max_change_sensor.png"
+    barWithTitle(count_2022_max_sensor, title2, "Date", "Total daily overall pesdestrain count", file2)
+
 
 
 
@@ -302,3 +318,54 @@ def sensorCorrelation(df, sensor1, sensor2):
     pearson_coef = pearsonDistance(pearson_coef, compare_merged)          
     # find maximum
     diffConclusion(pearson_coef)
+
+
+
+
+# q15
+def joinCovidTravel(df, file1, file2):
+    """
+    Function that joins the three dataframe together. df is the original pedestrain data frame, file1 is the covid-19 cases data, file2 is the international traveller data.
+    Returns a joint dataframe.
+    """
+
+    # create temp df
+    df_temp = df
+    df_temp['Date_Time'] = pd.to_datetime(df_temp['Date_Time']).dt.strftime('%Y-%m-%d')
+
+    # read the covid data file
+    covid_df = pd.read_csv(file1)
+    covid_df = covid_df[['Date','VIC']]
+    covid_df['Date'] = pd.to_datetime(covid_df['Date']).dt.strftime('%Y-%m-%d')
+
+    # read the international arrival data file
+    travel_df = pd.DataFrame(pd.read_excel(file2, 'Data1'))[['Unnamed: 0','Number of movements ;  Short-term Visitors arriving ;']]
+    travel_df.rename(columns = {'Unnamed: 0':'Date_Time', 'Number of movements ;  Short-term Visitors arriving ;':'Arrival'}, inplace = True)
+    travel_df['Date_Time'] = pd.to_datetime(travel_df['Date_Time']).dt.strftime('%Y-%m')
+
+    # join covid to pedestraint data frame
+    covid_pedestrain_df = pd.merge(left = df_temp, right = covid_df, left_on = 'Date_Time', right_on = 'Date')
+    covid_pedestrain_df = covid_pedestrain_df.groupby(covid_pedestrain_df.Date_Time, as_index = False).agg({'Hourly_Counts':'sum','VIC':'mean'})
+    monthly_overall = pd.DataFrame(covid_pedestrain_df.groupby(pd.to_datetime(covid_pedestrain_df.Date_Time).dt.strftime('%Y-%m')).agg({'Hourly_Counts':'mean','VIC':'mean'}))  
+
+    # join travel to pedestraint data frame
+    monthly_overall = pd.merge(left = monthly_overall, right = travel_df, left_on = 'Date_Time', right_on = 'Date_Time')
+
+    return monthly_overall
+
+
+def investCovidTravel(df, file1, file2):
+    """
+    Investigate relationship between pedestrain count and covid-19 confirm cases and international travel restriction.
+    Take pedestrain dataframe df, covid data file1, arrival data file2, plot and save the time series comparison plots.
+    """
+    # join dataframe
+    monthly_overall = joinCovidTravel(df, file1, file2)
+
+    # plot and save arrival vs pedestrain
+    timeSeriesForTwo(monthly_overall, "Arrival", "Hourly_Counts", 'Internation arrival monthly', 'Daily pedestrain count', "Time serie data for monthly internation arrival and average pedestrain count")
+
+    
+    # plot and save covid-19 vs pedestrain
+    timeSeriesForTwo(monthly_overall, "VIC", "Hourly_Counts", 'Average daily covid-19 cases', 'Average daily pedestrain count', "Time serie data for monthly covid-19 cases and average pedestrain count")
+
