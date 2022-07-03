@@ -367,9 +367,10 @@ def investCovidTravel(df, file1, file2):
     # plot and save arrival vs pedestrain
     timeSeriesForTwo(monthly_overall, "Arrival", "Hourly_Counts", 'Internation arrival monthly', 'Daily pedestrain count', "Time serie data for monthly internation arrival and average pedestrain count")
 
-    
+
     # plot and save covid-19 vs pedestrain
-    timeSeriesForTwo(monthly_overall, "VIC", "Hourly_Counts", 'Average daily covid-19 cases', 'Average daily pedestrain count', "Time serie data for monthly covid-19 cases and average pedestrain count")
+    timeSeriesForTwo(monthly_overall[pd.to_datetime(monthly_overall.Date_Time) < '2021-09-01'], "VIC", "Hourly_Counts", 'Average daily covid-19 cases', 'Average daily pedestrain count', "Time serie data for monthly covid-19 cases and average pedestrain count before September 2021", '1')
+    timeSeriesForTwo(monthly_overall[pd.to_datetime(monthly_overall.Date_Time) >= '2021-09-01'], "VIC", "Hourly_Counts", 'Average daily covid-19 cases', 'Average daily pedestrain count', "Time serie data for monthly covid-19 cases and average pedestrain count before September 2021", '2')
 
 
 

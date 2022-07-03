@@ -11,10 +11,10 @@ def barWithTitle(df, title, x, y, fname):
     plt.savefig(fname, bbox_inches='tight')
 
 
-def timeSeriesForTwo(time_series, col1, col2, col1_name, col2_name, title):
+def timeSeriesForTwo(time_series, col1, col2, col1_name, col2_name, title, seg = ''):
     """
     Plot the time series data for two different columens col1 and col2 in the dataframe df. Name the axis using col1_name and col2_name. Name the picture with title.
-    Save the images as png image.
+    Save the images as png image. If seg not empty, then the time series is segmented, else, it is the complete dataframe.
     """
     fig, ax_left = plt.subplots(figsize=(17,5))
     ax_right = ax_left.twinx()
@@ -27,6 +27,7 @@ def timeSeriesForTwo(time_series, col1, col2, col1_name, col2_name, title):
 
     h1, l1 = ax_left.get_legend_handles_labels()
     h2, l2 = ax_right.get_legend_handles_labels()
+    
 
     plt.legend(h1+h2, l1+l2, loc=2)
-    plt.savefig(col1 + '_' + col2 + '_ time_series' + '.png')
+    plt.savefig(col1 + '_' + col2 + '_time_series' + str(seg) + '.png')
