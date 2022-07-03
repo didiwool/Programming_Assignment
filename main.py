@@ -58,3 +58,4 @@ sensorCorrelation(df, 3, 9)
 
 #answer for question 15
 investCovidTravel(df, covid_file, travel_file)
+investLockdown(df)
