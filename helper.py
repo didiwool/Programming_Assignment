@@ -91,3 +91,14 @@ def diffConclusion(e_distance):
     min_change = e_distance[min_day]
     print("Day with the most change is " + str(max_day) + ", and the greatest change is " + str(round(max_change)) + ".")
     print("Day with the least change is " + str(min_day) + ", and the least change is " + str(round(min_change)) + ".")
+
+
+
+def dataframeToDict(df, drop):
+    """
+    Convert dataframe df to dictionary using date_key as key, drop the columns listed in the list drop.
+    """
+    df["date_key"] = df["Year"].astype(str) + df["Month"].astype(str) + df["Day"].astype(str)
+    df.drop(drop, axis = 1, inplace = True)
+    df_dict = list(df.set_index(df.date_key).drop("date_key", axis = 1).to_dict().values())[0]
+    return df_dict
