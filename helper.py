@@ -259,13 +259,16 @@ def find_extreme_item(result):
     """
     Print the keys with maximum value and minimum value in dictionary.
     """
-    max_item = 0
-    min_item = 0
-    max_value = max(result, key=result.get)
-    min_value = min(result, key=result.get)
-    for key in result.keys():
-        if result[key] == max_value:
-            max_item = key
-        if result[key] == min_value:
-            min_item = key
-    return (max_item, min_item)
+    if len(result.keys()) != 0:
+        max_item = ''
+        min_item = ''
+        max_value = max(result.values())
+        min_value = min(result.values())
+        for key in result.keys():
+            if result[key] == max_value:
+                max_item = key
+            if result[key] == min_value:
+                min_item = key
+        return (max_item, min_item)
+    else:
+        return('', '')
