@@ -120,11 +120,11 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Date_Time.dt.strftime('%m-%d') != '04-30')
         ].sort_values(by=['Date_Time'])['Hourly_Counts'])
 
-    return (rain_prev, solar_prev, 
+    return (rain_prev, solar_prev,
             temp_prev, sensor3_past1, nearby_past1, sensor3_pastday)
 
 
-def test_data_for_count(dataframe, nearby, sensor_id, start_time, end_time, 
+def test_data_for_count(dataframe, nearby, sensor_id, start_time, end_time,
                         day):
     """
     Function for preparing the test data in Q10.

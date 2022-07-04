@@ -181,7 +181,7 @@ def sensor_hist(dataframe, year, start_no, end_no):
     sensors from start_no to end_no. Data
     """
     new_df = pd.DataFrame(pd.DataFrame(dataframe[
-        (dataframe.Year == year) & 
+        (dataframe.Year == year) &
         (dataframe.Sensor_ID.isin(range(start_no, end_no + 1)))]
         .groupby([
             dataframe.Sensor_ID,

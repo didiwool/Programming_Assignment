@@ -21,7 +21,7 @@ def bar_with_title(dataframe, title, x_axis, y_axis, fname):
 
 
 def time_series_for_two(
-                        time_series, col1, col2, col1_name, col2_name, 
+                        time_series, col1, col2, col1_name, col2_name,
                         title, seg=''):
     """
     Plot the time series data for two different columens col1 and col2 in the
