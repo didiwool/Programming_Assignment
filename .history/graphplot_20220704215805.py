@@ -74,7 +74,7 @@ def unusual_day_plot(dataframe, info, index, sensor_id, nearby, model):
             lastday = 28
         else:
             lastday = 31
-    # get the required data of the modelling variable
+
     rain_prev = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id)
         & (dataframe.Year == 2022) & (dataframe.Month == lastmonth)
@@ -111,11 +111,8 @@ def unusual_day_plot(dataframe, info, index, sensor_id, nearby, model):
         (dataframe.Sensor_ID == sensor_id)
         & (dataframe.Year == 2022)
         & (dataframe.Month == month) & (dataframe.Mdate == mdate)]
-    # get the predicted value using test data
     new_df['predicted'] = model.predict(factors)
-    # plot the scatter plot of actual value
     new_df.plot.scatter(x='Time', y='Hourly_Counts', c='green')
-    # plot a curve using predicted value
     spline_1 = make_interp_spline(new_df['Time'], new_df['predicted'])
     value_range = np.linspace(new_df['Time'].min(), new_df['Time'].max(), 500)
     target = spline_1(value_range)

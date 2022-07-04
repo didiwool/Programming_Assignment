@@ -75,7 +75,6 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
     sensor_id. Generate and return the tuple of the required np.array for
     linear regression.
     """
-    # rainfall of yesterday
     rain_prev = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id) &
         (dataframe.Time >= start_time) &
@@ -84,7 +83,6 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '04-30')
         ].sort_values(by=['Date_Time'])['Rainfall amount (millimetres)'])
-    # solar of yesterday
     solar_prev = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id) &
         (dataframe.Time >= start_time) &
@@ -94,7 +92,6 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Date_Time.dt.strftime('%m-%d') != '04-30')
         ].sort_values(
             by=['Date_Time'])['Daily global solar exposure (MJ/m*m)'])
-    # temperature of yesterday
     temp_prev = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id) &
         (dataframe.Time >= start_time) &
@@ -103,7 +100,6 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '04-30')
         ].sort_values(by=['Date_Time'])['Maximum temperature (Degree C)'])
-    # sensor count of previous hour
     sensor3_past1 = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id) &
         (dataframe.Time >= start_time - 1) &
@@ -112,7 +108,6 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01')
         ].sort_values(by=['Date_Time'])['Hourly_Counts'])
-    # count of a nearby sensor in previous hour
     nearby_past1 = np.array(dataframe[
         (dataframe.Sensor_ID == nearby) &
         (dataframe.Time >= start_time - 1) &
@@ -121,7 +116,6 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01')
         ].sort_values(by=['Date_Time'])['Hourly_Counts'])
-    # sensor count of yesterday
     sensor3_pastday = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id) &
         (dataframe.Time >= start_time) &
@@ -159,7 +153,7 @@ def test_data_for_count(dataframe, nearby, sensor_id, start_time, end_time,
             if value == dict_day[day] - 1:
                 yesterday = key
 
-    # compute array of required variables for training model
+    # compute array of required variables
     rain_prev = np.array(dataframe[
         (dataframe.Day == yesterday) &
         (dataframe.Sensor_ID == sensor_id) &
@@ -225,7 +219,6 @@ def compute_distance(distance, merge_df):
     distance and compute the euclidean distance for the two Hourly_Counts
     in merge_df.
     """
-    # get the data of distance for each day
     for day in merge_df['Date_Time'].unique():
         count_sensor1 = merge_df[merge_df.Date_Time == day]['Hourly_Counts_x']
         count_sensor2 = merge_df[merge_df.Date_Time == day]['Hourly_Counts_y']
@@ -241,7 +234,6 @@ def pearson_distance(pearson_coef, compare_merged):
     Take an empty dictionary distance and compute the correlation for the two
     Hourly_Counts in merge_df.
     """
-    # get the person coefficient of each day of week
     for day in compare_merged['Date_Time'].unique():
         count_sensor1 = compare_merged[
             compare_merged.Date_Time == day]['Hourly_Counts_x']
@@ -261,7 +253,6 @@ def diff_conclusion(e_distance, measure):
     max_change = e_distance[max_day]
     min_day = min(e_distance, key=e_distance.get)
     min_change = e_distance[min_day]
-    # print the required output using the max and min info of data
     print(
         "Day with the greatest " + measure + " is " + str(max_day) +
         ", and the value is " + str(round(max_change)) + ".")

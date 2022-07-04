@@ -261,7 +261,6 @@ def diff_conclusion(e_distance, measure):
     max_change = e_distance[max_day]
     min_day = min(e_distance, key=e_distance.get)
     min_change = e_distance[min_day]
-    # print the required output using the max and min info of data
     print(
         "Day with the greatest " + measure + " is " + str(max_day) +
         ", and the value is " + str(round(max_change)) + ".")
