@@ -1,0 +1,25 @@
+ID,Date_Time,Year,Month,Mdate,Day,Time,Sensor_ID,Sensor_Name,Hourly_Counts
+4277909,"May 02, 2022 12:00:00 AM",2022,May,2,Monday,0,59,Swanston St - RMIT Building 80,61
+4277910,"May 02, 2022 01:00:00 AM",2022,May,2,Monday,1,59,Swanston St - RMIT Building 80,43
+4277911,"May 02, 2022 02:00:00 AM",2022,May,2,Monday,2,59,Swanston St - RMIT Building 80,12
+4277912,"May 02, 2022 03:00:00 AM",2022,May,2,Monday,3,59,Swanston St - RMIT Building 80,23
+4277913,"May 02, 2022 04:00:00 AM",2022,May,2,Monday,4,59,Swanston St - RMIT Building 80,11
+4277914,"May 02, 2022 05:00:00 AM",2022,May,2,Monday,5,59,Swanston St - RMIT Building 80,17
+4277915,"May 02, 2022 06:00:00 AM",2022,May,2,Monday,6,59,Swanston St - RMIT Building 80,46
+4277916,"May 02, 2022 07:00:00 AM",2022,May,2,Monday,7,59,Swanston St - RMIT Building 80,187
+4277917,"May 02, 2022 08:00:00 AM",2022,May,2,Monday,8,59,Swanston St - RMIT Building 80,736
+4277918,"May 02, 2022 09:00:00 AM",2022,May,2,Monday,9,59,Swanston St - RMIT Building 80,586
+4277919,"May 02, 2022 10:00:00 AM",2022,May,2,Monday,10,59,Swanston St - RMIT Building 80,1031
+4277920,"May 02, 2022 11:00:00 AM",2022,May,2,Monday,11,59,Swanston St - RMIT Building 80,1001
+4277921,"May 02, 2022 12:00:00 PM",2022,May,2,Monday,12,59,Swanston St - RMIT Building 80,1707
+4277922,"May 02, 2022 01:00:00 PM",2022,May,2,Monday,13,59,Swanston St - RMIT Building 80,1504
+4277923,"May 02, 2022 02:00:00 PM",2022,May,2,Monday,14,59,Swanston St - RMIT Building 80,1621
+4277924,"May 02, 2022 03:00:00 PM",2022,May,2,Monday,15,59,Swanston St - RMIT Building 80,1312
+4277925,"May 02, 2022 04:00:00 PM",2022,May,2,Monday,16,59,Swanston St - RMIT Building 80,1447
+4277926,"May 02, 2022 05:00:00 PM",2022,May,2,Monday,17,59,Swanston St - RMIT Building 80,1218
+4277927,"May 02, 2022 06:00:00 PM",2022,May,2,Monday,18,59,Swanston St - RMIT Building 80,442
+4277928,"May 02, 2022 07:00:00 PM",2022,May,2,Monday,19,59,Swanston St - RMIT Building 80,346
+4277929,"May 02, 2022 08:00:00 PM",2022,May,2,Monday,20,59,Swanston St - RMIT Building 80,223
+4277930,"May 02, 2022 09:00:00 PM",2022,May,2,Monday,21,59,Swanston St - RMIT Building 80,173
+4277931,"May 02, 2022 10:00:00 PM",2022,May,2,Monday,22,59,Swanston St - RMIT Building 80,114
+4277932,"May 02, 2022 11:00:00 PM",2022,May,2,Monday,23,59,Swanston St - RMIT Building 80,81
