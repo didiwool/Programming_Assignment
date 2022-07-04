@@ -91,7 +91,7 @@ def data_cleansing(count_file, rain_file, temp_file, solar_file):
     xcut = (dataframe["Rainfall amount (millimetres)"].isnull()
             | dataframe["Maximum temperature (Degree C)"].isnull()
             | dataframe["Daily global solar exposure (MJ/m*m)"].isnull())
-    dataframe = dataframe[xcut is False].reset_index(drop=True)
+    dataframe = dataframe[xcut == False].reset_index(drop=True)
     dataframe.Date_Time = pd.to_datetime(dataframe.Date_Time)
 
     return dataframe
