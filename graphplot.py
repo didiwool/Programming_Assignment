@@ -91,12 +91,12 @@ def unusual_day_plot(dataframe, info, index, sensor_id, nearby, model):
         & (dataframe.Year == 2022) & (dataframe.Month == lastmonth)
         & (dataframe.Mdate == lastday)]
         .sort_values(by=['Date_Time'])['Maximum temperature (Degree C)'])
-    sensor2_pastday = np.array(dataframe[
+    sensor2_past = np.array(dataframe[
         (dataframe.Sensor_ID == nearby)
         & (dataframe.Year == 2022) & (dataframe.Month == lastmonth)
         & (dataframe.Mdate == lastday)]
         .sort_values(by=['Date_Time'])['Hourly_Counts'])
-    sensor3_pastday = np.array(dataframe[
+    sensor3_past = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id)
         & (dataframe.Year == 2022) & (dataframe.Month == lastmonth)
         & (dataframe.Mdate == lastday)]
@@ -104,8 +104,8 @@ def unusual_day_plot(dataframe, info, index, sensor_id, nearby, model):
 
     factors = np.concatenate((
         rain_prev.reshape(-1, 1), solar_prev.reshape(-1, 1),
-        temp_prev.reshape(-1, 1), sensor2_pastday.reshape(-1, 1),
-        sensor3_pastday.reshape(-1, 1)), axis=1)
+        temp_prev.reshape(-1, 1), sensor2_past.reshape(-1, 1),
+        sensor3_past.reshape(-1, 1)), axis=1)
 
     new_df = dataframe[
         (dataframe.Sensor_ID == sensor_id)

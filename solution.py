@@ -13,7 +13,8 @@ from graphplot import bar_with_title, time_series_for_two, \
     unusual_day_plot
 from helper import get_count_hourly, summary_hourly_count, \
     daily_count, data_for_count, test_data_for_count, \
-    compute_distance, pearson_distance, diff_conclusion
+    compute_distance, pearson_distance, \
+    diff_conclusion, find_extreme_item
 
 # define constant
 WEEKDAY = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
@@ -320,6 +321,7 @@ def time_series_sensor(dataframe, year1, year2, month):
     max_change = e_distance[max_sensor]
     max_sensor_name = dataframe[
         dataframe.Sensor_ID == max_sensor]['Sensor_Name'].unique()[0]
+    print('Output of question 9: ')
     print("Sensor with the most change is sensor_id = " + str(max_sensor) +
           ", and the greatest change is " +
           str(max_change) + ". The name of the sensor is: " + max_sensor_name)
@@ -417,11 +419,13 @@ def model_for_count(dataframe, sensor_id, start_time, end_time):
 
         y_predict = model.predict(x_test)
         result[day] = mean_squared_error(y_test, y_predict)
+    print('Mean squared error of each day of week is: ')
+    print(result)
+    output = find_extreme_item(result)
+    return output
 
-    return result
 
-
-def unusual_day(dataframe, sensor_id):
+def unusual_day(dataframe):
     """
     Identify three unusual days for sensor with sensor_id in 2022.
     Build regression model with the following as predictors:
@@ -434,43 +438,40 @@ def unusual_day(dataframe, sensor_id):
     Print the three most unusal day, plot the predictions with actual values
     for the three days.
     """
-    if sensor_id == 1:
-        nearby = 2
-    else:
-        nearby = sensor_id - 1
+    nearby = 2
 
     train_data = np.array(dataframe[
-        (dataframe.Sensor_ID == sensor_id) & (dataframe.Year == 2022) &
+        (dataframe.Sensor_ID == 3) & (dataframe.Year == 2022) &
         (dataframe.Month.isin(
             ["January", "February", "March", "April", "May"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01')]
         .sort_values(by=['Date_Time'])['Hourly_Counts'])
     rain_prev = np.array(dataframe[
-        (dataframe.Sensor_ID == sensor_id) & (dataframe.Year == 2022) &
+        (dataframe.Sensor_ID == 3) & (dataframe.Year == 2022) &
         (dataframe.Month.isin(
             ["January", "February", "March", "April", "May"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-31')]
         .sort_values(by=['Date_Time'])['Rainfall amount (millimetres)'])
     solar_prev = np.array(dataframe[
-        (dataframe.Sensor_ID == sensor_id) & (dataframe.Year == 2022) &
+        (dataframe.Sensor_ID == 3) & (dataframe.Year == 2022) &
         (dataframe.Month.isin(
             ["January", "February", "March", "April", "May"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-31')]
         .sort_values(by=['Date_Time'])['Daily global solar exposure (MJ/m*m)'])
     temp_prev = np.array(dataframe[
-        (dataframe.Sensor_ID == sensor_id) & (dataframe.Year == 2022) &
+        (dataframe.Sensor_ID == 3) & (dataframe.Year == 2022) &
         (dataframe.Month.isin(
             ["January", "February", "March", "April", "May"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-31')]
         .sort_values(by=['Date_Time'])['Maximum temperature (Degree C)'])
-    sensor2_pastday = np.array(dataframe[
+    sensor2_past = np.array(dataframe[
         (dataframe.Sensor_ID == nearby) & (dataframe.Year == 2022) &
         (dataframe.Month.isin(
             ["January", "February", "March", "April", "May"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-31')]
         .sort_values(by=['Date_Time'])['Hourly_Counts'])
-    sensor3_pastday = np.array(dataframe[
-        (dataframe.Sensor_ID == sensor_id) & (dataframe.Year == 2022) &
+    sensor3_past = np.array(dataframe[
+        (dataframe.Sensor_ID == 3) & (dataframe.Year == 2022) &
         (dataframe.Month.isin(
             ["January", "February", "March", "April", "May"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-31')]
@@ -478,13 +479,13 @@ def unusual_day(dataframe, sensor_id):
 
     factors = np.concatenate((
         rain_prev.reshape(-1, 1), solar_prev.reshape(-1, 1),
-        temp_prev.reshape(-1, 1), sensor2_pastday.reshape(-1, 1),
-        sensor3_pastday.reshape(-1, 1)), axis=1)
+        temp_prev.reshape(-1, 1), sensor2_past.reshape(-1, 1),
+        sensor3_past.reshape(-1, 1)), axis=1)
 
     model = LinearRegression().fit(factors, train_data)
 
     new_df = dataframe[
-        (dataframe.Sensor_ID == sensor_id) & (dataframe.Time >= 0)
+        (dataframe.Sensor_ID == 3) & (dataframe.Time >= 0)
         & (dataframe.Time <= 23) & (dataframe.Year == 2022)
         & (dataframe.Month.isin(
             ["January", "February", "March", "April", "May"]))
@@ -500,7 +501,7 @@ def unusual_day(dataframe, sensor_id):
         .reset_index().head(3)
 
     for i in range(3):
-        unusual_day_plot(dataframe, result, i, sensor_id, nearby, model)
+        unusual_day_plot(dataframe, result, i, 3, nearby, model)
 
     return result
 
