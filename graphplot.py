@@ -30,7 +30,7 @@ def time_series_for_two(
     Save the images as png image. If seg not empty, then the time series is
     segmented, else, it is the complete dataframe.
     """
-    fig, ax_left = plt.subplots(figsize=(17, 5))
+    _, ax_left = plt.subplots(figsize=(17, 5))
     ax_right = ax_left.twinx()
 
     ax_left.plot(
@@ -49,6 +49,8 @@ def time_series_for_two(
 
     plt.legend(h_1 + h_2, l_1 + l_2, loc=2)
     plt.savefig(col1 + '_' + col2 + '_time_series' + str(seg) + '.png')
+
+    plt.close()
 
 
 def unusual_day_plot(dataframe, info, index, sensor_id, nearby, model):
