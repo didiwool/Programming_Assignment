@@ -60,8 +60,8 @@ print('Explanation plot for quesition 9 saved.')
 # answer for question 10
 result = model_for_count(df, 3, 12, 13)
 print('Output of question 10: ')
-print('The most accurate day is ' + result[0])
-print('The least accurate day is ' + result[1])
+print('The most accurate day is ' + result[1])
+print('The least accurate day is ' + result[0])
 
 # answer for question 11
 result = unusual_day(df, 3)

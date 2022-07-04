@@ -257,9 +257,6 @@ def diff_conclusion(e_distance):
         ", and the least change is " + str(round(min_change)) + ".")
 
 def find_extreme_item(result):
-    """
-    Print the keys with maximum value and minimum value in dictionary.
-    """
     max_item = 0
     min_item = 0
     max_value = max(result, result.get())
@@ -269,4 +266,4 @@ def find_extreme_item(result):
             max_item = key
         if result[key] == min_value:
             min_item = key
-    return (max_item, min_item)
+    return(max_item, min_item)
