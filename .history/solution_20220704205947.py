@@ -637,22 +637,22 @@ def invest_covid_travel(dataframe, file1, file2):
     time_series_for_two(
         monthly_overall, "Arrival", "Hourly_Counts",
         'Internation arrival monthly', 'Daily pedestrian count',
-        "Time serie data for monthly " + \
-        "internation arrival and average pedestrian count")
+        "Time serie data for monthly \
+        internation arrival and average pedestrian count")
 
     # plot and save covid-19 vs pedestrian
     time_series_for_two(monthly_overall[
         pd.to_datetime(monthly_overall.Date_Time) < '2021-09-01'],
         "VIC", "Hourly_Counts", 'Average daily covid-19 cases',
         'Average daily pedestrian count',
-        "Time serie data for monthly covid-19 cases and " + \
-        "average pedestrian count before September 2021", '1')
+        "Time serie data for monthly covid-19 cases and \
+            average pedestrian count before September 2021", '1')
     time_series_for_two(monthly_overall[
         pd.to_datetime(monthly_overall.Date_Time) >= '2021-09-01'],
         "VIC", "Hourly_Counts", 'Average daily covid-19 cases',
         'Average daily pedestrian count',
-        "Time serie data for monthly covid-19 cases and " + \
-        "average pedestrian count before September 2021", '2')
+        "Time serie data for monthly covid-19 cases and \
+        average pedestrian count before September 2021", '2')
 
 
 def invest_lockdown(dataframe):
@@ -725,7 +725,7 @@ def invest_lockdown(dataframe):
 
     df_time_series.plot(
         x="Date_Time", y="Hourly_Counts",
-        title="Covid-19 cases versus pedestrian " + \
-        "(Red = Victoria under lockdown)", figsize=(12, 5))
+        title="Covid-19 cases versus pedestrian \
+        (Red = Victoria under lockdown)", figsize=(12, 5))
 
     plt.savefig("lockdown_impace_time_series.png", bbox_inches='tight')

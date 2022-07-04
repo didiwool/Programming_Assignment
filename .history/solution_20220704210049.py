@@ -725,7 +725,7 @@ def invest_lockdown(dataframe):
 
     df_time_series.plot(
         x="Date_Time", y="Hourly_Counts",
-        title="Covid-19 cases versus pedestrian " + \
-        "(Red = Victoria under lockdown)", figsize=(12, 5))
+        title="Covid-19 cases versus pedestrian \
+        (Red = Victoria under lockdown)", figsize=(12, 5))
 
     plt.savefig("lockdown_impace_time_series.png", bbox_inches='tight')
