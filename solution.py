@@ -25,12 +25,12 @@ WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
 def data_cleansing(count_file, rain_file, temp_file, solar_file):
     """
     Gerenal function for data cleansing.
-    Take pedestrain count file, rainfall file, maximum temperature file
+    Take pedestrian count file, rainfall file, maximum temperature file
     and solar exposure file, join the four files on date, clean the data
     by removing null values and return the joint dataframe.
     """
     # read files
-    pedestrain_df = pd.read_csv(count_file)
+    pedestrian_df = pd.read_csv(count_file)
     rainfall_df = pd.read_csv(rain_file)
     temperature_df = pd.read_csv(temp_file)
     solar_df = pd.read_csv(solar_file)
@@ -40,9 +40,9 @@ def data_cleansing(count_file, rain_file, temp_file, solar_file):
                   "April": 4, "May": 5, "June": 6, "July": 7, "August": 8,
                   "September": 9, "October": 10, "November": 11,
                   "December": 12}
-    pedestrain_df["date_key"] = pedestrain_df["Year"].astype(str) \
-        + pedestrain_df["Month"].map(month_dict).astype(str) \
-        + pedestrain_df["Mdate"].astype(str)
+    pedestrian_df["date_key"] = pedestrian_df["Year"].astype(str) \
+        + pedestrian_df["Month"].map(month_dict).astype(str) \
+        + pedestrian_df["Mdate"].astype(str)
 
     # join rainfall dataframe based on column date_key
     rainfall_df["date_key"] = rainfall_df["Year"].astype(str) + \
@@ -79,13 +79,13 @@ def data_cleansing(count_file, rain_file, temp_file, solar_file):
         solar_df.date_key).drop(
             "date_key", axis=1).to_dict().values())[0]
 
-    pedestrain_df["Rainfall amount (millimetres)"] \
-        = pedestrain_df["date_key"].map(rainfall_dict)
-    pedestrain_df["Maximum temperature (Degree C)"] \
-        = pedestrain_df["date_key"].map(temperature_dict)
-    pedestrain_df["Daily global solar exposure (MJ/m*m)"] \
-        = pedestrain_df["date_key"].map(solar_dict)
-    dataframe = pedestrain_df
+    pedestrian_df["Rainfall amount (millimetres)"] \
+        = pedestrian_df["date_key"].map(rainfall_dict)
+    pedestrian_df["Maximum temperature (Degree C)"] \
+        = pedestrian_df["date_key"].map(temperature_dict)
+    pedestrian_df["Daily global solar exposure (MJ/m*m)"] \
+        = pedestrian_df["date_key"].map(solar_dict)
+    dataframe = pedestrian_df
 
     # remove any row with null value in rainfall
     # amount, max temperature, solar exposure
@@ -157,7 +157,7 @@ def pedestrian_hist(dataframe, year1, year2):
             agg({'Hourly_Counts': 'sum'})).groupby('Day').mean()
     df1 = daily_count(df1)
 
-    title1 = "Mean daily overall pedestrain count for each day of week in " \
+    title1 = "Mean daily overall pedestrian count for each day of week in " \
         + str(year1)
     file1 = str(year1) + "_busy_daily.png"
     bar_with_title(df1, title1, "Day of week",
@@ -168,7 +168,7 @@ def pedestrian_hist(dataframe, year1, year2):
          dataframe.Day]).agg({'Hourly_Counts': 'sum'})).groupby('Day').mean()
     df2 = daily_count(df2)
 
-    title2 = "Mean daily overall pedestrain count for each day of week in " + \
+    title2 = "Mean daily overall pedestrian count for each day of week in " + \
         str(year2)
     file2 = str(year2) + "_busy_daily.png"
     bar_with_title(df2, title2, "Day of week",
@@ -188,7 +188,7 @@ def sensor_hist(dataframe, year, start_no, end_no):
             dataframe.Sensor_ID,
             dataframe.Date_Time.dt.strftime('%y-%m-%d')])
         .agg({'Hourly_Counts': 'sum'}))).groupby('Sensor_ID').mean()
-    title = "Mean daily overall pedestrain count for sensor 1-20 in " + \
+    title = "Mean daily overall pedestrian count for sensor 1-20 in " + \
         str(year)
     file = str(year) + "_busy_sensor.png"
     bar_with_title(new_df, title, "sensor ID",
@@ -212,7 +212,7 @@ def pedestrian_hist_rain(dataframe, year1, year2):
 
     df1 = daily_count(df1)
 
-    title1 = "Mean daily overall pedestrain count \
+    title1 = "Mean daily overall pedestrian count \
         for each raining day of week in " + str(year1)
     file1 = str(year1) + "_busy_daily_rain.png"
     bar_with_title(df1, title1, "Day of week",
@@ -228,7 +228,7 @@ def pedestrian_hist_rain(dataframe, year1, year2):
 
     df2 = daily_count(df2)
 
-    title2 = "Mean daily overall pedestrain count for \
+    title2 = "Mean daily overall pedestrian count for \
         each raining day of week in " + str(year2)
     file2 = str(year2) + "_busy_daily_rain.png"
     bar_with_title(df2, title2, "Day of week",
@@ -253,7 +253,7 @@ def pedestrian_hist_rain_temp(dataframe, year1, year2, max_temp):
     df1 = pd.DataFrame(df1[df1.Hourly_Counts != 0]).groupby('Day').mean()
     df1 = daily_count(df1)
 
-    title1 = "Mean daily overall pedestrain count for each \
+    title1 = "Mean daily overall pedestrian count for each \
         cold, raining day of week in " + str(year1)
     file1 = str(year1) + "_busy_daily_rain_cold.png"
     bar_with_title(df1, title1, "Day of week",
@@ -269,7 +269,7 @@ def pedestrian_hist_rain_temp(dataframe, year1, year2, max_temp):
     df2 = pd.DataFrame(df2[df2.Hourly_Counts != 0]).groupby('Day').mean()
     df2 = daily_count(df2)
 
-    title2 = "Mean daily overall pedestrain count for \
+    title2 = "Mean daily overall pedestrian count for \
         each cold, raining day of week in " + str(year2)
     file2 = str(year2) + "_busy_daily_rain_cold.png"
     bar_with_title(df2, title2, "Day of week",
@@ -362,9 +362,9 @@ def model_for_count(dataframe, sensor_id, start_time, end_time):
     - rainfall of the previous day;
     - solar exposure of the previous day;
     - max temp of previous day;
-    - pedestrain count from sensor 3 in the past hours
+    - pedestrian count from sensor 3 in the past hours
     - get the count of a nearby
-    - pedestrain count of sensor 3 the same time yesterday
+    - pedestrian count of sensor 3 the same time yesterday
 
     Print the final equation of the model.
     Fit the model with last month from the time period, return the accuracy
@@ -432,9 +432,9 @@ def unusual_day(dataframe):
     - rainfall of the previous day;
     - solar exposure of the previous day;
     - max temp of previous day;
-    - pedestrain count from sensor 3 in the past hours
+    - pedestrian count from sensor 3 in the past hours
     - get the count of a nearby
-    - pedestrain count of sensor 3 the same time yesterday
+    - pedestrian count of sensor 3 the same time yesterday
     Print the three most unusal day, plot the predictions with actual values
     for the three days.
     """
@@ -574,7 +574,7 @@ def sensor_correlation(dataframe, sensor1, sensor2):
 def join_covid_travel(dataframe, file1, file2):
     """
     Function that joins the three dataframe together.
-    df is the original pedestrain data frame,
+    df is the original pedestrian data frame,
     file1 is the covid-19 cases data,
     file2 is the international traveller data.
     Returns a joint dataframe.
@@ -602,19 +602,19 @@ def join_covid_travel(dataframe, file1, file2):
     travel_df['Date_Time'] = pd.to_datetime(
         travel_df['Date_Time']).dt.strftime('%Y-%m')
 
-    # join covid to pedestraint data frame
-    covid_pedestrain_df = pd.merge(
+    # join covid to pedestrian data frame
+    covid_pedestrian_df = pd.merge(
         left=df_temp, right=covid_df,
         left_on='Date_Time', right_on='Date')
-    covid_pedestrain_df = covid_pedestrain_df \
-        .groupby(covid_pedestrain_df.Date_Time, as_index=False) \
+    covid_pedestrian_df = covid_pedestrian_df \
+        .groupby(covid_pedestrian_df.Date_Time, as_index=False) \
         .agg({'Hourly_Counts': 'sum', 'VIC': 'mean'})
     monthly_overall = pd.DataFrame(
-        covid_pedestrain_df.groupby(pd.to_datetime(
-            covid_pedestrain_df.Date_Time).dt.strftime('%Y-%m'))
+        covid_pedestrian_df.groupby(pd.to_datetime(
+            covid_pedestrian_df.Date_Time).dt.strftime('%Y-%m'))
         .agg({'Hourly_Counts': 'mean', 'VIC': 'mean'}))
 
-    # join travel to pedestraint data frame
+    # join travel to pedestrian data frame
     monthly_overall = pd.merge(
         left=monthly_overall, right=travel_df,
         left_on='Date_Time', right_on='Date_Time')
@@ -624,43 +624,43 @@ def join_covid_travel(dataframe, file1, file2):
 
 def invest_covid_travel(dataframe, file1, file2):
     """
-    Investigate relationship between pedestrain count
+    Investigate relationship between pedestrian count
     and covid-19 confirm cases and international travel restriction.
-    Take pedestrain dataframe df, covid data file1, arrival data file2,
+    Take pedestrian dataframe df, covid data file1, arrival data file2,
     plot and save the time series comparison plots.
     """
     # join dataframe
     monthly_overall = join_covid_travel(dataframe, file1, file2)
 
-    # plot and save arrival vs pedestrain
+    # plot and save arrival vs pedestrian
     time_series_for_two(
         monthly_overall, "Arrival", "Hourly_Counts",
-        'Internation arrival monthly', 'Daily pedestrain count',
+        'Internation arrival monthly', 'Daily pedestrian count',
         "Time serie data for monthly \
-        internation arrival and average pedestrain count")
+        internation arrival and average pedestrian count")
 
-    # plot and save covid-19 vs pedestrain
+    # plot and save covid-19 vs pedestrian
     time_series_for_two(monthly_overall[
         pd.to_datetime(monthly_overall.Date_Time) < '2021-09-01'],
         "VIC", "Hourly_Counts", 'Average daily covid-19 cases',
-        'Average daily pedestrain count',
+        'Average daily pedestrian count',
         "Time serie data for monthly covid-19 cases and \
-            average pedestrain count before September 2021", '1')
+            average pedestrian count before September 2021", '1')
     time_series_for_two(monthly_overall[
         pd.to_datetime(monthly_overall.Date_Time) >= '2021-09-01'],
         "VIC", "Hourly_Counts", 'Average daily covid-19 cases',
-        'Average daily pedestrain count',
+        'Average daily pedestrian count',
         "Time serie data for monthly covid-19 cases and \
-        average pedestrain count before September 2021", '2')
+        average pedestrian count before September 2021", '2')
 
 
 def invest_lockdown(dataframe):
     """
     Utilize Victoria lockdown history from 2021-1-1 to 2021-10-21
-    to visualize impact of lockdown on pedestrain counts in Melbourne.
+    to visualize impact of lockdown on pedestrian counts in Melbourne.
     Plot the resulting visualizations and save them.
     """
-    # generate array-like dataframe of daily pedestrain counts
+    # generate array-like dataframe of daily pedestrian counts
     # from 2021-01-01 to 2021-10-21 for plotting heat map
     df_array = dataframe[dataframe['Date_Time'] < '2021-10-21'] \
         .groupby(['Date_Time', 'Time'], as_index=False).agg(sum)
@@ -710,7 +710,7 @@ def invest_lockdown(dataframe):
     axes_0.set_xlabel('Hours in a day')
     axes.yaxis.tick_right()
     fig.tight_layout()
-    axes.title.set_text("Hourly pedestrain counts from 2021-01 to 2021-10")
+    axes.title.set_text("Hourly pedestrian counts from 2021-01 to 2021-10")
     axes_0.title.set_text("Lockdown")
     plt.savefig("lockdown_impace_heat_map.png", bbox_inches='tight')
 
@@ -724,7 +724,7 @@ def invest_lockdown(dataframe):
 
     df_time_series.plot(
         x="Date_Time", y="Hourly_Counts",
-        title="Covid-19 cases versus pedestrain \
+        title="Covid-19 cases versus pedestrian \
         (Red = Victoria under lockdown)", figsize=(12, 5))
 
     plt.savefig("lockdown_impace_time_series.png", bbox_inches='tight')

@@ -203,8 +203,7 @@ def test_data_for_count(dataframe, nearby, sensor_id, start_time, end_time,
         (dataframe.Month == 'May') &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-31')
         ].sort_values(by=['Date_Time'])['Hourly_Counts'])
-    print(rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1,
-          sensor3_pastday)
+    
     return (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1,
             sensor3_pastday)
 
@@ -262,8 +261,8 @@ def find_extreme_item(result):
     """
     max_item = 0
     min_item = 0
-    max_value = max(result, result.get())
-    min_value = min(result, result.get())
+    max_value = max(result, key=result.get)
+    min_value = min(result, key=result.get)
     for key in result.keys():
         if result[key] == max_value:
             max_item = key
