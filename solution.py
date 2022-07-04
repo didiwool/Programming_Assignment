@@ -572,28 +572,20 @@ def sensor_correlation(dataframe, sensor1, sensor2):
         'Pearson correlation coefficient')
 
 
-def join_covid_travel(dataframe, file1, file2):
+def join_travel(dataframe, file):
     """
     Function that joins the three dataframe together.
-    df is the original pedestrian data frame,
-    file1 is the covid-19 cases data,
-    file2 is the international traveller data.
+    df is the original pedestrian data frame, file is the international
+    traveller data.
     Returns a joint dataframe.
     """
-
     # create temp df
     df_temp = dataframe
     df_temp['Date_Time'] = pd.to_datetime(
         df_temp['Date_Time']).dt.strftime('%Y-%m-%d')
 
-    # read the covid data file
-    covid_df = pd.read_csv(file1)
-    covid_df = covid_df[['Date', 'VIC']]
-    covid_df['Date'] = pd.to_datetime(
-        covid_df['Date']).dt.strftime('%Y-%m-%d')
-
     # read the international arrival data file
-    travel_df = pd.DataFrame(pd.read_excel(file2, 'Data1'))[[
+    travel_df = pd.DataFrame(pd.read_excel(file, 'Data1'))[[
         'Unnamed: 0',
         'Number of movements ;  Short-term Visitors arriving ;']]
     travel_df.rename(columns={
@@ -604,16 +596,10 @@ def join_covid_travel(dataframe, file1, file2):
         travel_df['Date_Time']).dt.strftime('%Y-%m')
 
     # join covid to pedestrian data frame
-    covid_pedestrian_df = pd.merge(
-        left=df_temp, right=covid_df,
-        left_on='Date_Time', right_on='Date')
-    covid_pedestrian_df = covid_pedestrian_df \
-        .groupby(covid_pedestrian_df.Date_Time, as_index=False) \
-        .agg({'Hourly_Counts': 'sum', 'VIC': 'mean'})
     monthly_overall = pd.DataFrame(
-        covid_pedestrian_df.groupby(pd.to_datetime(
-            covid_pedestrian_df.Date_Time).dt.strftime('%Y-%m'))
-        .agg({'Hourly_Counts': 'mean', 'VIC': 'mean'}))
+        df_temp.groupby(pd.to_datetime(
+            df_temp.Date_Time).dt.strftime('%Y-%m'))
+        .agg({'Hourly_Counts': 'mean'}))
 
     # join travel to pedestrian data frame
     monthly_overall = pd.merge(
@@ -623,36 +609,69 @@ def join_covid_travel(dataframe, file1, file2):
     return monthly_overall
 
 
-def invest_covid_travel(dataframe, file1, file2):
+def join_activecases_ped(dataframe, file):
     """
-    Investigate relationship between pedestrian count
-    and covid-19 confirm cases and international travel restriction.
-    Take pedestrian dataframe df, covid data file1, arrival data file2,
-    plot and save the time series comparison plots.
+    Function that takes the original pedestrian dataframe and joins it with the active covid cases dataframe
+    """
+
+    # create tempoary funciton df to assist in joining the two dataframes
+    df_temp = dataframe
+    df_temp['Date_Time'] = pd.to_datetime(df_temp['Date_Time']).dt.strftime('%Y-%m-%d')
+    df_temp['Date_Time'] = df_temp['Date_Time'].astype('datetime64[ns]')
+
+    # read the covid data file and perfrom data cleaning so the covid cases column is in numeric and the same date range as pedestrian dataframe
+    covid_active = pd.read_csv(file)
+    covid_active.columns = ['Date_Time', 'All active cases']
+    covid_active['All active cases'] = covid_active['All active cases'].str.replace(',', '').astype(float)
+    time = covid_active['Date_Time'].str.len()>5
+    covid_active = covid_active.loc[time]
+    covid_active['Date_Time'] = pd.to_datetime(covid_active['Date_Time'],dayfirst=True)
+    covid_active = covid_active[(covid_active['Date_Time'] >= '2021-01-01') & (covid_active['Date_Time'] <= '2022-05-31')]
+    covid_active.reset_index(inplace=True)
+    covid_active = covid_active[['Date_Time', 'All active cases']]
+    covid_active['Date_Time'] = covid_active['Date_Time'].astype('datetime64[ns]')
+
+    # join covid_active dataframe to the pedestrain data frame
+    covid_pedestrain_df = pd.merge(df_temp, covid_active, left_on='Date_Time', right_on='Date_Time')
+    covid_pedestrain_df = covid_pedestrain_df.groupby(covid_pedestrain_df.Date_Time, as_index = True).agg({'Hourly_Counts':'sum', 'All active cases':'mean'})
+    
+    # since the data fluctuates a lot, we apply a 7 days rolling average to smooth out the data
+    covid_pedestrain_df['All active cases_smoothed'] = covid_pedestrain_df['All active cases'].rolling(window = 7).mean()
+    covid_pedestrain_df['Hourly_Counts_smoothed'] = covid_pedestrain_df['Hourly_Counts'].rolling(window = 7).mean()
+    covid_pedestrain_df.reset_index(inplace = True)
+
+    return covid_pedestrain_df
+
+
+def invest_activecases_ped(dataframe, file):
+    """
+    Investigate relationship between pedestrain count and active covid cases
+    Take pedestrain dataframe df, active covid cases file, plot a time series and save the time series comparison plots.
     """
     # join dataframe
-    monthly_overall = join_covid_travel(dataframe, file1, file2)
+    covid_pedestrain_df = join_activecases_ped(dataframe, file)
+
+    # plot and save arrival vs pedestrain
+    time_series_for_two(covid_pedestrain_df[pd.to_datetime(covid_pedestrain_df.Date_Time) < '2021-08-01'], "All active cases_smoothed", "Hourly_Counts_smoothed", 'Daily active covid-19 cases', 'Daily pedestrain count', "Time serie data for daily active covid-19 cases and daily pedestrain count before August 2021", '1')
+    time_series_for_two(covid_pedestrain_df[pd.to_datetime(covid_pedestrain_df.Date_Time) >= '2021-08-01'], "All active cases_smoothed", "Hourly_Counts_smoothed", 'Daily active covid-19 cases', 'Daily pedestrain count', "Time serie data for daily active covid-19 cases and daily pedestrain count after August 2021", '2')
+
+
+def invest_travel(dataframe, file):
+    """
+    Investigate relationship between pedestrian count
+    and international travel restriction.
+    Take pedestrian dataframe,  arrival data file, plot and save the
+    time series comparison plots.
+    """
+    # join dataframe
+    monthly_overall = join_travel(dataframe, file)
 
     # plot and save arrival vs pedestrian
     time_series_for_two(
         monthly_overall, "Arrival", "Hourly_Counts",
         'Internation arrival monthly', 'Daily pedestrian count',
-        "Time serie data for monthly " + \
-        "internation arrival and average pedestrian count")
-
-    # plot and save covid-19 vs pedestrian
-    time_series_for_two(monthly_overall[
-        pd.to_datetime(monthly_overall.Date_Time) < '2021-09-01'],
-        "VIC", "Hourly_Counts", 'Average daily covid-19 cases',
-        'Average daily pedestrian count',
-        "Time serie data for monthly covid-19 cases and " + \
-        "average pedestrian count before September 2021", '1')
-    time_series_for_two(monthly_overall[
-        pd.to_datetime(monthly_overall.Date_Time) >= '2021-09-01'],
-        "VIC", "Hourly_Counts", 'Average daily covid-19 cases',
-        'Average daily pedestrian count',
-        "Time serie data for monthly covid-19 cases and " + \
-        "average pedestrian count before September 2021", '2')
+        "Time serie data for monthly \
+        internation arrival and average pedestrian count")
 
 
 def invest_lockdown(dataframe):
@@ -725,7 +744,11 @@ def invest_lockdown(dataframe):
 
     df_time_series.plot(
         x="Date_Time", y="Hourly_Counts",
-        title="Covid-19 cases versus pedestrian " + \
-        "(Red = Victoria under lockdown)", figsize=(12, 5))
+        title="Covid-19 cases versus pedestrian \
+        (Red = Victoria under lockdown)", figsize=(12, 5))
+    plt.axvspan('2021-02-12','2021-02-17', facecolor='r', alpha=0.3)
+    plt.axvspan('2021-05-27','2021-06-10', facecolor='r', alpha=0.3)
+    plt.axvspan('2021-07-15','2021-07-20', facecolor='r', alpha=0.3)
+    plt.axvspan('2021-08-05','2021-10-21', facecolor='r', alpha=0.3)
 
     plt.savefig("lockdown_impace_time_series.png", bbox_inches='tight')

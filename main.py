@@ -7,14 +7,14 @@ from solution import data_cleansing, pedestrian_stats, pedestrian_scatter, \
     pedestrian_hist, sensor_hist, pedestrian_hist_rain, \
     pedestrian_hist_rain_temp, \
     time_series_sensor, model_for_count, unusual_day, daily_difference, \
-    sensor_correlation, invest_covid_travel, invest_lockdown
+    sensor_correlation, invest_travel, invest_lockdown, invest_activecases_ped
 
 # files for reading, change the route name or file name if necessary
 COUNT_FILE = "count2021-2022.csv"
 RAIN_FILE = "rainfall-all-years/IDCJAC0009_086338_1800_Data.csv"
 TEMP_FILE = "temperature-all-years/IDCJAC0010_086338_1800_Data.csv"
 SOLAR_FILE = "solar-all-years/IDCJAC0016_086338_1800_Data.csv"
-COVID_FILE = "cases_daily_state.csv"
+COVID_FILE = "All time (all active).csv"
 TRAVEL_FILE = "340101.xlsx"
 
 #  data cleansing part
@@ -78,7 +78,8 @@ sensor_correlation(df, 3, 9)
 print('Output of question 13: ')
 
 # answer for question 15
-invest_covid_travel(df, COVID_FILE, TRAVEL_FILE)
+invest_travel(df, TRAVEL_FILE)
+invest_activecases_ped(df, COVID_FILE)
 invest_lockdown(df)
 print('Output of question 15: ')
 print('Plot of question 15 saved')
