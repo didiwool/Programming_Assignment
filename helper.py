@@ -40,6 +40,7 @@ def summary_hourly_count(dataframe, time):
     mean = np.mean(dataframe["Hourly_Counts"])
     max_count = np.max(dataframe["Hourly_Counts"])
     min_count = np.min(dataframe["Hourly_Counts"])
+
     # store the data as a dict
     data = {
         'time': time,
@@ -84,6 +85,7 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '04-30')
         ].sort_values(by=['Date_Time'])['Rainfall amount (millimetres)'])
+
     # solar of yesterday
     solar_prev = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id) &
@@ -94,6 +96,7 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Date_Time.dt.strftime('%m-%d') != '04-30')
         ].sort_values(
             by=['Date_Time'])['Daily global solar exposure (MJ/m*m)'])
+
     # temperature of yesterday
     temp_prev = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id) &
@@ -103,6 +106,7 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '04-30')
         ].sort_values(by=['Date_Time'])['Maximum temperature (Degree C)'])
+
     # sensor count of previous hour
     sensor3_past1 = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id) &
@@ -112,6 +116,7 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01')
         ].sort_values(by=['Date_Time'])['Hourly_Counts'])
+
     # count of a nearby sensor in previous hour
     nearby_past1 = np.array(dataframe[
         (dataframe.Sensor_ID == nearby) &
@@ -121,6 +126,7 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01')
         ].sort_values(by=['Date_Time'])['Hourly_Counts'])
+
     # sensor count of yesterday
     sensor3_pastday = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id) &
@@ -214,7 +220,7 @@ def test_data_for_count(dataframe, nearby, sensor_id, start_time, end_time,
         (dataframe.Month == 'May') &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-31')
         ].sort_values(by=['Date_Time'])['Hourly_Counts'])
-    
+
     return (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1,
             sensor3_pastday)
 
@@ -239,7 +245,7 @@ def pearson_distance(pearson_coef, compare_merged):
     """
     Compute and return the pearson correlation coefficient.
     Take an empty dictionary distance and compute the correlation for the two
-    Hourly_Counts in merge_df.
+    Hourly_Counts in compare_merged.
     """
     # get the person coefficient of each day of week
     for day in compare_merged['Date_Time'].unique():
@@ -257,17 +263,19 @@ def diff_conclusion(e_distance, measure):
     """
     Print the concluding result of euclidean distance e_distance.
     """
+    # compute the maximum and minimum values
     max_day = max(e_distance, key=e_distance.get)
     max_change = e_distance[max_day]
     min_day = min(e_distance, key=e_distance.get)
     min_change = e_distance[min_day]
+
     # print the required output using the max and min info of data
     print(
         "Day with the greatest " + measure + " is " + str(max_day) +
-        ", and the value is " + str(round(max_change)) + ".")
+        ", and the value is " + str(round(max_change, 2)) + ".")
     print(
         "Day with the least " + measure + " is " + str(min_day) +
-        ", and the value is " + str(round(min_change)) + ".")
+        ", and the value is " + str(round(min_change, 2)) + ".")
 
 
 def find_extreme_item(result):

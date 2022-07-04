@@ -16,6 +16,9 @@ from helper import get_count_hourly, summary_hourly_count, \
     compute_distance, pearson_distance, \
     diff_conclusion, find_extreme_item
 
+# disable warning messages from pandas
+pd.options.mode.chained_assignment = None
+
 # define constant
 WEEKDAY = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
@@ -197,7 +200,7 @@ def sensor_hist(dataframe, year, start_no, end_no):
             dataframe.Sensor_ID,
             dataframe.Date_Time.dt.strftime('%y-%m-%d')])
         .agg({'Hourly_Counts': 'sum'}))).groupby('Sensor_ID').mean()
-    
+
     # plot the histogram using data
     title = "Mean daily overall pedestrian count for sensor 1-20 in " + \
         str(year)
@@ -225,7 +228,7 @@ def pedestrian_hist_rain(dataframe, year1, year2):
     # get the daily count using helper functions
     df1 = daily_count(df1)
 
-    #plot the histogram
+    # plot the histogram
     title1 = "Mean daily overall pedestrian count" + \
         "for each raining day of week in " + str(year1)
     file1 = str(year1) + "_busy_daily_rain.png"
@@ -243,7 +246,7 @@ def pedestrian_hist_rain(dataframe, year1, year2):
 
     df2 = daily_count(df2)
 
-    #plot the histogram
+    # plot the histogram
     title2 = "Mean daily overall pedestrian count for" + \
         "each raining day of week in " + str(year2)
     file2 = str(year2) + "_busy_daily_rain.png"
@@ -315,6 +318,7 @@ def time_series_sensor(dataframe, year1, year2, month):
         .groupby([
             dataframe.Sensor_ID, dataframe.Date_Time.dt.strftime('%m-%d')])
         .agg({"Hourly_Counts": "sum"}))
+
     # get the data of year2 and specific month
     df2 = pd.DataFrame(dataframe[
         (dataframe.Year == year2) & (dataframe.Month == month)]
@@ -326,6 +330,7 @@ def time_series_sensor(dataframe, year1, year2, month):
     compare_merged = pd.merge(
         left=df1, right=df2, left_on=['Sensor_ID', 'Date_Time'],
         right_on=['Sensor_ID', 'Date_Time'])
+
     # initiate the dictionary to store distance
     e_distance = defaultdict(float)
     limit = dataframe['Sensor_ID'].max()
@@ -349,7 +354,7 @@ def time_series_sensor(dataframe, year1, year2, month):
     max_change = e_distance[max_sensor]
     max_sensor_name = dataframe[
         dataframe.Sensor_ID == max_sensor]['Sensor_Name'].unique()[0]
-    
+
     print("Sensor with the most change is sensor_id = " + str(max_sensor) +
           ", and the greatest change is " +
           str(max_change) + ". The name of the sensor is: " + max_sensor_name)
@@ -373,7 +378,6 @@ def time_series_sensor(dataframe, year1, year2, month):
     file1 = str(year1) + "_max_change_sensor.png"
     bar_with_title(count_2021_max_sensor, title1, "Date",
                    "Total daily overall pesdestrain count", file1)
-
     title2 = "Bar plot for sensor with maximum change in " \
         + month + " " + str(year2)
     file2 = str(year2) + "_max_change_sensor.png"
@@ -404,24 +408,26 @@ def model_for_count(dataframe, sensor_id, start_time, end_time):
         nearby = sensor_id - 1
 
     # prepare the data for training the linear model
-    train_data = np.array(dataframe[ \
-        (dataframe.Sensor_ID == sensor_id) & \
-        (dataframe.Time >= start_time) & (dataframe.Time <= end_time - 1) & \
-        (dataframe.Year == 2022) & \
-        (dataframe.Month.isin(["January", "February", "March", "April"])) & \
-        (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01') \
+    train_data = np.array(dataframe[
+        (dataframe.Sensor_ID == sensor_id) &
+        (dataframe.Time >= start_time) & (dataframe.Time <= end_time - 1) &
+        (dataframe.Year == 2022) &
+        (dataframe.Month.isin(["January", "February", "March", "April"])) &
+        (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01')
         ].sort_values(by=['Date_Time'])['Hourly_Counts'])
-    (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1, \
+    (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1,
         sensor3_pastday) \
         = data_for_count(dataframe, nearby, sensor_id, start_time, end_time)
-    factor = np.concatenate(( \
-        rain_prev.reshape(-1, 1), solar_prev.reshape(-1, 1), \
-        temp_prev.reshape(-1, 1), sensor3_past1.reshape(-1, 1), \
-        nearby_past1.reshape(-1, 1), \
+    factor = np.concatenate((
+        rain_prev.reshape(-1, 1), solar_prev.reshape(-1, 1),
+        temp_prev.reshape(-1, 1), sensor3_past1.reshape(-1, 1),
+        nearby_past1.reshape(-1, 1),
         sensor3_pastday.reshape(-1, 1)), axis=1)
     target = train_data
+
     # fit the linear model
     model = LinearRegression().fit(factor, target)
+
     # get the info of the model
     train_error = model.score(factor, target)
     print(f"coefficient of determination: {train_error}")
@@ -431,9 +437,9 @@ def model_for_count(dataframe, sensor_id, start_time, end_time):
     result = {}
     # compute test data for each day of week
     for day in WEEK:
-        (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1, \
+        (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1,
             sensor3_pastday) \
-            = test_data_for_count( \
+            = test_data_for_count(
                 dataframe, nearby, sensor_id, start_time, end_time, day)
         x_test = np.concatenate((
             rain_prev.reshape(-1, 1), solar_prev.reshape(-1, 1),
@@ -520,6 +526,7 @@ def unusual_day(dataframe):
 
     # fit the model
     model = LinearRegression().fit(factors, train_data)
+
     # get the data for prediction
     new_df = dataframe[
         (dataframe.Sensor_ID == 3) & (dataframe.Time >= 0)
@@ -527,6 +534,7 @@ def unusual_day(dataframe):
         & (dataframe.Month.isin(
             ["January", "February", "March", "April", "May"]))
         & (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01')]
+
     # get the adsolute error by actual data and predicted data
     new_df["distance"] = abs(train_data - model.predict(factors))
     new_df = new_df.groupby([
@@ -599,7 +607,7 @@ def sensor_correlation(dataframe, sensor1, sensor2):
     sensor3["Date_Time"] = sensor3.Date_Time.dt.strftime('%m-%d')
 
     # get the required data for the second sensor,
-    # which is sensor 9 in thisquestion
+    # which is sensor 9 in this question
     sensor9 = dataframe[(
         dataframe.Year == 2022)
         & (dataframe.Month == 'May') & (dataframe.Sensor_ID == sensor2)
@@ -607,22 +615,21 @@ def sensor_correlation(dataframe, sensor1, sensor2):
         & (dataframe.Day.isin(WEEKDAY))][[
             "Time", "Date_Time", "Hourly_Counts"]]
     sensor9["Date_Time"] = sensor9.Date_Time.dt.strftime('%m-%d')
-
     compare_merged = pd.merge(
         left=sensor3, right=sensor9,
         left_on=['Time', 'Date_Time'], right_on=['Time', 'Date_Time'])
-    pearson_coef = defaultdict(float)
 
     # compute pearson coefficient
+    pearson_coef = defaultdict(float)
     pearson_coef = pearson_distance(pearson_coef, compare_merged)
-    # find maximum
-    diff_conclusion(pearson_coef, \
-        'Pearson correlation coefficient')
+
+    # find and print extrema
+    diff_conclusion(pearson_coef, 'Pearson correlation coefficient')
 
 
 def join_travel(dataframe, file):
     """
-    Function that joins the three dataframe together.
+    Function that joins the two dataframe together.
     df is the original pedestrian data frame, file is the international
     traveller data.
     Returns a joint dataframe.
@@ -659,34 +666,48 @@ def join_travel(dataframe, file):
 
 def join_activecases_ped(dataframe, file):
     """
-    Function that takes the original pedestrian dataframe and joins it with the active covid cases dataframe
+    Function that takes the original pedestrian dataframe and joins it with
+    the active covid cases dataframe
     """
-
     # create tempoary funciton df to assist in joining the two dataframes
     df_temp = dataframe
-    df_temp['Date_Time'] = pd.to_datetime(df_temp['Date_Time']).dt.strftime('%Y-%m-%d')
+    df_temp['Date_Time'] = pd.to_datetime(
+        df_temp['Date_Time']).dt.strftime('%Y-%m-%d')
     df_temp['Date_Time'] = df_temp['Date_Time'].astype('datetime64[ns]')
 
-    # read the covid data file and perfrom data cleaning so the covid cases column is in numeric and the same date range as pedestrian dataframe
+    # read the covid data file and perfrom data cleaning
+    # so the covid cases column is in numeric
+    # and the same date range as pedestrian dataframe
     covid_active = pd.read_csv(file)
     covid_active.columns = ['Date_Time', 'All active cases']
-    covid_active['All active cases'] = covid_active['All active cases'].str.replace(',', '').astype(float)
-    time = covid_active['Date_Time'].str.len()>5
+    covid_active['All active cases'] = covid_active[
+        'All active cases'].str.replace(',', '').astype(float)
+    time = covid_active['Date_Time'].str.len() > 5
     covid_active = covid_active.loc[time]
-    covid_active['Date_Time'] = pd.to_datetime(covid_active['Date_Time'],dayfirst=True)
-    covid_active = covid_active[(covid_active['Date_Time'] >= '2021-01-01') & (covid_active['Date_Time'] <= '2022-05-31')]
+    covid_active['Date_Time'] = pd.to_datetime(
+        covid_active['Date_Time'], dayfirst=True)
+    covid_active = covid_active[
+        (covid_active['Date_Time'] >= '2021-01-01') &
+        (covid_active['Date_Time'] <= '2022-05-31')]
     covid_active.reset_index(inplace=True)
     covid_active = covid_active[['Date_Time', 'All active cases']]
-    covid_active['Date_Time'] = covid_active['Date_Time'].astype('datetime64[ns]')
+    covid_active['Date_Time'] = covid_active['Date_Time'].astype(
+        'datetime64[ns]')
 
     # join covid_active dataframe to the pedestrain data frame
-    covid_pedestrain_df = pd.merge(df_temp, covid_active, left_on='Date_Time', right_on='Date_Time')
-    covid_pedestrain_df = covid_pedestrain_df.groupby(covid_pedestrain_df.Date_Time, as_index = True).agg({'Hourly_Counts':'sum', 'All active cases':'mean'})
-    
-    # since the data fluctuates a lot, we apply a 7 days rolling average to smooth out the data
-    covid_pedestrain_df['All active cases_smoothed'] = covid_pedestrain_df['All active cases'].rolling(window = 7).mean()
-    covid_pedestrain_df['Hourly_Counts_smoothed'] = covid_pedestrain_df['Hourly_Counts'].rolling(window = 7).mean()
-    covid_pedestrain_df.reset_index(inplace = True)
+    covid_pedestrain_df = pd.merge(
+        df_temp, covid_active, left_on='Date_Time', right_on='Date_Time')
+    covid_pedestrain_df = covid_pedestrain_df.groupby(
+        covid_pedestrain_df.Date_Time, as_index=True).agg(
+            {'Hourly_Counts': 'sum', 'All active cases': 'mean'})
+
+    # since the data fluctuates a lot, we apply a 7 days rolling average to
+    # smooth out the data
+    covid_pedestrain_df['All active cases_smoothed'] = covid_pedestrain_df[
+        'All active cases'].rolling(window=7).mean()
+    covid_pedestrain_df['Hourly_Counts_smoothed'] = \
+        covid_pedestrain_df['Hourly_Counts'].rolling(window=7).mean()
+    covid_pedestrain_df.reset_index(inplace=True)
 
     return covid_pedestrain_df
 
@@ -694,14 +715,25 @@ def join_activecases_ped(dataframe, file):
 def invest_activecases_ped(dataframe, file):
     """
     Investigate relationship between pedestrain count and active covid cases
-    Take pedestrain dataframe df, active covid cases file, plot a time series and save the time series comparison plots.
+    Take pedestrain dataframe df, active covid cases file, plot a time series
+    and save the time series comparison plots.
     """
     # join dataframe
     covid_pedestrain_df = join_activecases_ped(dataframe, file)
 
-    # plot and save arrival vs pedestrain
-    time_series_for_two(covid_pedestrain_df[pd.to_datetime(covid_pedestrain_df.Date_Time) < '2021-08-01'], "All active cases_smoothed", "Hourly_Counts_smoothed", 'Daily active covid-19 cases', 'Daily pedestrain count', "Time serie data for daily active covid-19 cases and daily pedestrain count before August 2021", '1')
-    time_series_for_two(covid_pedestrain_df[pd.to_datetime(covid_pedestrain_df.Date_Time) >= '2021-08-01'], "All active cases_smoothed", "Hourly_Counts_smoothed", 'Daily active covid-19 cases', 'Daily pedestrain count', "Time serie data for daily active covid-19 cases and daily pedestrain count after August 2021", '2')
+    # plot and save covid vs pedestrain
+    time_series_for_two(covid_pedestrain_df[pd.to_datetime(
+        covid_pedestrain_df.Date_Time) < '2021-08-01'],
+        "All active cases_smoothed", "Hourly_Counts_smoothed",
+        'Daily active covid-19 cases', 'Daily pedestrain count',
+        "Time serie data for daily active covid-19 cases and daily \
+        pedestrain count before August 2021", '1')
+    time_series_for_two(covid_pedestrain_df[pd.to_datetime(
+        covid_pedestrain_df.Date_Time) >= '2021-08-01'],
+        "All active cases_smoothed", "Hourly_Counts_smoothed",
+        'Daily active covid-19 cases', 'Daily pedestrain count',
+        "Time serie data for daily active covid-19 cases and daily \
+        pedestrain count after August 2021", '2')
 
 
 def invest_travel(dataframe, file):
@@ -790,13 +822,14 @@ def invest_lockdown(dataframe):
         .groupby(df_time_series['Date_Time']).agg({'Hourly_Counts': 'sum'})
     df_time_series.reset_index(inplace=True)
 
+    # plot the time series plot
     df_time_series.plot(
         x="Date_Time", y="Hourly_Counts",
-        title="Covid-19 cases versus pedestrian \
+        title="Time series plot of daily pedestrain counts \
         (Red = Victoria under lockdown)", figsize=(12, 5))
-    plt.axvspan('2021-02-12','2021-02-17', facecolor='r', alpha=0.3)
-    plt.axvspan('2021-05-27','2021-06-10', facecolor='r', alpha=0.3)
-    plt.axvspan('2021-07-15','2021-07-20', facecolor='r', alpha=0.3)
-    plt.axvspan('2021-08-05','2021-10-21', facecolor='r', alpha=0.3)
+    plt.axvspan('2021-02-12', '2021-02-17', facecolor='r', alpha=0.3)
+    plt.axvspan('2021-05-27', '2021-06-10', facecolor='r', alpha=0.3)
+    plt.axvspan('2021-07-15', '2021-07-20', facecolor='r', alpha=0.3)
+    plt.axvspan('2021-08-05', '2021-10-21', facecolor='r', alpha=0.3)
 
     plt.savefig("lockdown_impace_time_series.png", bbox_inches='tight')
