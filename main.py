@@ -1,3 +1,7 @@
+"""
+Main module for syndicate assignment.
+"""
+
 from solution import data_cleansing, pedestrian_stats, pedestrian_scatter, \
     pedestrian_hist, sensor_hist, pedestrian_hist_rain, pedestrian_hist_rain_temp, \
     time_series_sensor, model_for_count, unusual_day, daily_difference, \

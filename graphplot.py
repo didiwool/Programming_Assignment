@@ -12,7 +12,7 @@ def bar_with_title(dataframe, title, x_axis, y_axis, fname):
     of x-aixs, y-axis, title. Save the plot to location given by fname.
     """
     dataframe.plot(kind = "bar")
-    plt.xticks(horizontalalignment="center")
+    plt.xticks(horizontalalignment = "center")
     plt.title(title)
     plt.xlabel(x_axis)
     plt.ylabel(y_axis)
@@ -29,7 +29,7 @@ def time_series_for_two(
     Save the images as png image. If seg not empty, then the time series is
     segmented, else, it is the complete dataframe.
     """
-    _, ax_left = plt.subplots(figsize=(17,5))
+    _, ax_left = plt.subplots(figsize = (17,5))
     ax_right = ax_left.twinx()
 
     ax_left.plot(
@@ -54,7 +54,8 @@ def time_series_for_two(
 
 def unusual_day_plot(dataframe, info, index, sensor_id, nearby, model):
     """
-    Plot the scatter plot of the pedestrian count of a sensor with 'sensor_id'.
+    Plot the scatter plot of the pedestrian count of a sensor with
+    'sensor_id'.
     There is also a curve representing a predicted count of that sensor
     to show how unusual the real count is.
     Save the images as png image using the date value storeed in info.
@@ -66,7 +67,7 @@ def unusual_day_plot(dataframe, info, index, sensor_id, nearby, model):
     lastmonth = month
 
     if mdate == 1:
-        if month in ['January', 'May']:
+        if month in ['January','May']:
             lastday = 30
         elif month == 'February':
             lastday = 28
@@ -74,38 +75,41 @@ def unusual_day_plot(dataframe, info, index, sensor_id, nearby, model):
             lastday = 31
 
     rain_prev = np.array(dataframe[(dataframe.Sensor_ID == sensor_id) \
-        & (dataframe.Year ==2022) & (dataframe.Month == lastmonth) \
+        & (dataframe.Year == 2022) & (dataframe.Month == lastmonth) \
         & (dataframe.Mdate == lastday)] \
         .sort_values(by = ['Date_Time'])['Rainfall amount (millimetres)'])
     solar_prev = np.array(dataframe[(dataframe.Sensor_ID == sensor_id) \
-        & (dataframe.Year ==2022) & (dataframe.Month == lastmonth) \
+        & (dataframe.Year == 2022) & (dataframe.Month == lastmonth) \
         & (dataframe.Mdate == lastday)] \
-        .sort_values(by = ['Date_Time'])['Daily global solar exposure (MJ/m*m)'])
+        .sort_values(by = ['Date_Time']) \
+            ['Daily global solar exposure (MJ/m*m)'])
     temp_prev = np.array(dataframe[(dataframe.Sensor_ID == sensor_id) \
-        & (dataframe.Year ==2022) & (dataframe.Month == lastmonth) \
+        & (dataframe.Year == 2022) & (dataframe.Month == lastmonth) \
         & (dataframe.Mdate == lastday)] \
         .sort_values(by = ['Date_Time'])['Maximum temperature (Degree C)'])
     sensor2_pastday = np.array(dataframe[(dataframe.Sensor_ID == nearby) \
-        & (dataframe.Year ==2022) & (dataframe.Month == lastmonth) \
+        & (dataframe.Year == 2022) & (dataframe.Month == lastmonth) \
         & (dataframe.Mdate == lastday)] \
         .sort_values(by = ['Date_Time'])['Hourly_Counts'])
     sensor3_pastday = np.array(dataframe[(dataframe.Sensor_ID == sensor_id) \
-        & (dataframe.Year ==2022) & (dataframe.Month == lastmonth) \
+        & (dataframe.Year == 2022) & (dataframe.Month == lastmonth) \
         & (dataframe.Mdate == lastday)] \
         .sort_values(by = ['Date_Time'])['Hourly_Counts'])
 
-    factors = np.concatenate((rain_prev.reshape(-1,1), solar_prev.reshape(-1,1), \
-        temp_prev.reshape(-1,1), sensor2_pastday.reshape(-1,1), \
+    factors = np.concatenate((
+        rain_prev.reshape(-1,1), solar_prev.reshape(-1,1),
+        temp_prev.reshape(-1,1), sensor2_pastday.reshape(-1,1),
         sensor3_pastday.reshape(-1,1)), axis = 1)
 
-    new_df = dataframe[(dataframe.Sensor_ID == sensor_id) & (dataframe.Year ==2022) \
+    new_df = dataframe[(dataframe.Sensor_ID == sensor_id) \
+        & (dataframe.Year == 2022) \
         & (dataframe.Month == month) & (dataframe.Mdate == mdate)]
     new_df['predicted'] = model.predict(factors)
     new_df.plot.scatter(x = 'Time', y = 'Hourly_Counts', c = 'green')
     spline_1 = make_interp_spline(new_df['Time'], new_df['predicted'])
     value_range = np.linspace(new_df['Time'].min(), new_df['Time'].max(), 500)
     target = spline_1(value_range)
-    plt.plot(value_range, target, c= 'lightblue')
+    plt.plot(value_range, target, c = 'lightblue')
     plt.title('Daily Pedestrian Counts of ' + month + ' ' + mdate.astype(str))
     plt.xlabel('Time')
     plt.ylabel('Count')

@@ -250,5 +250,3 @@ def diff_conclusion(e_distance):
     print(
         "Day with the least change is " + str(min_day) +
         ", and the least change is " + str(round(min_change)) + ".")
-
-
