@@ -8,7 +8,7 @@ import numpy as np
 
 # define constant
 WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
- "Sunday"]
+        "Sunday"]
 
 
 def get_count_hourly(dataframe, year, hour):
@@ -31,7 +31,7 @@ def summary_hourly_count(dataframe, time):
     """
     result = pd.DataFrame(columns=['time', 'median', 'mean', 'max', 'min'])
     dataframe = dataframe.groupby(
-        ['Month', 'Mdate'], as_index = False)["Hourly_Counts"].sum()
+        ['Month', 'Mdate'], as_index=False)["Hourly_Counts"].sum()
     median = np.median(dataframe["Hourly_Counts"])
     mean = np.mean(dataframe["Hourly_Counts"])
     max_count = np.max(dataframe["Hourly_Counts"])
@@ -55,14 +55,14 @@ def daily_count(dataframe):
     """
     dataframe = pd.DataFrame(
         dataframe.to_dict()['Hourly_Counts'].items(),
-        columns= ["Day","Hourly Counts"])
+        columns=["Day", "Hourly Counts"])
     dataframe.Day = dataframe.Day.astype("category")
     dataframe.Day = dataframe.Day.cat.set_categories(WEEK)
     dataframe = dataframe.sort_values("Day")
-    dataframe = dataframe.set_index(dataframe["Day"], drop = True)
+    dataframe = dataframe.set_index(dataframe["Day"], drop=True)
     return dataframe
 
-# function for preparing the train data or test data in Q10
+
 def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
     """
     Function for preparing the train data or test data in Q10.
@@ -75,17 +75,18 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Time >= start_time) &
         (dataframe.Time <= end_time - 1) &
         (dataframe.Year == 2022) &
-        (dataframe.Month.isin(["January", "February", "March", "April"]) ) &
+        (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '04-30')
-        ].sort_values(by = ['Date_Time'])['Rainfall amount (millimetres)'])
+        ].sort_values(by=['Date_Time'])['Rainfall amount (millimetres)'])
     solar_prev = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id) &
         (dataframe.Time >= start_time) &
         (dataframe.Time <= end_time - 1) &
         (dataframe.Year == 2022) &
-        (dataframe.Month.isin(["January", "February", "March", "April"]) ) &
+        (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '04-30')
-        ].sort_values(by = ['Date_Time'])['Daily global solar exposure (MJ/m*m)'])
+        ].sort_values(
+            by=['Date_Time'])['Daily global solar exposure (MJ/m*m)'])
     temp_prev = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id) &
         (dataframe.Time >= start_time) &
@@ -93,7 +94,7 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Year == 2022) &
         (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '04-30')
-        ].sort_values(by = ['Date_Time'])['Maximum temperature (Degree C)'])
+        ].sort_values(by=['Date_Time'])['Maximum temperature (Degree C)'])
     sensor3_past1 = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id) &
         (dataframe.Time >= start_time - 1) &
@@ -101,7 +102,7 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Year == 2022) &
         (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01')
-        ].sort_values(by = ['Date_Time'])['Hourly_Counts'])
+        ].sort_values(by=['Date_Time'])['Hourly_Counts'])
     nearby_past1 = np.array(dataframe[
         (dataframe.Sensor_ID == nearby) &
         (dataframe.Time >= start_time - 1) &
@@ -109,7 +110,7 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Year == 2022) &
         (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01')
-        ].sort_values(by = ['Date_Time'])['Hourly_Counts'])
+        ].sort_values(by=['Date_Time'])['Hourly_Counts'])
     sensor3_pastday = np.array(dataframe[
         (dataframe.Sensor_ID == sensor_id) &
         (dataframe.Time >= start_time) &
@@ -117,13 +118,14 @@ def data_for_count(dataframe, nearby, sensor_id, start_time, end_time):
         (dataframe.Year == 2022) &
         (dataframe.Month.isin(["January", "February", "March", "April"])) &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '04-30')
-        ].sort_values(by = ['Date_Time'])['Hourly_Counts'])
+        ].sort_values(by=['Date_Time'])['Hourly_Counts'])
 
-    return (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1, sensor3_pastday)
+    return (rain_prev, solar_prev, 
+            temp_prev, sensor3_past1, nearby_past1, sensor3_pastday)
 
 
-
-def test_data_for_count(dataframe, nearby, sensor_id, start_time, end_time, day):
+def test_data_for_count(dataframe, nearby, sensor_id, start_time, end_time, 
+                        day):
     """
     Function for preparing the test data in Q10.
     Take a dataframe, a nearby sensor nearby, a chosen sensor with sensor_id.
@@ -153,9 +155,9 @@ def test_data_for_count(dataframe, nearby, sensor_id, start_time, end_time, day)
         (dataframe.Time >= start_time) &
         (dataframe.Time <= end_time - 1) &
         (dataframe.Year == 2022) &
-        (dataframe.Month == 'May' ) &
+        (dataframe.Month == 'May') &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-31')
-        ].sort_values(by = ['Date_Time'])['Rainfall amount (millimetres)'])
+        ].sort_values(by=['Date_Time'])['Rainfall amount (millimetres)'])
     solar_prev = np.array(dataframe[
         (dataframe.Day == yesterday) &
         (dataframe.Sensor_ID == sensor_id) &
@@ -164,33 +166,34 @@ def test_data_for_count(dataframe, nearby, sensor_id, start_time, end_time, day)
         (dataframe.Year == 2022) &
         (dataframe.Month == 'May') &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-31')
-        ].sort_values(by = ['Date_Time'])['Daily global solar exposure (MJ/m*m)'])
+        ].sort_values(by=['Date_Time'])[
+            'Daily global solar exposure (MJ/m*m)'])
     temp_prev = np.array(dataframe[
         (dataframe.Day == yesterday) &
         (dataframe.Sensor_ID == sensor_id) &
         (dataframe.Time >= start_time) &
         (dataframe.Time <= end_time - 1) &
         (dataframe.Year == 2022) &
-        (dataframe.Month == 'May' ) &
+        (dataframe.Month == 'May') &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-31')
-        ].sort_values(by = ['Date_Time'])['Maximum temperature (Degree C)'])
+        ].sort_values(by=['Date_Time'])['Maximum temperature (Degree C)'])
     sensor3_past1 = np.array(dataframe[
         (dataframe.Day == day) &
         (dataframe.Sensor_ID == sensor_id) &
         (dataframe.Time >= start_time - 1) &
         (dataframe.Time <= end_time - 2) &
         (dataframe.Year == 2022) &
-        (dataframe.Month == 'May' ) &
+        (dataframe.Month == 'May') &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-01')
-        ].sort_values(by = ['Date_Time'])['Hourly_Counts'])
+        ].sort_values(by=['Date_Time'])['Hourly_Counts'])
     nearby_past1 = np.array(dataframe[
         (dataframe.Day == day) &
         (dataframe.Sensor_ID == nearby) &
         (dataframe.Time >= start_time - 1) &
         (dataframe.Time <= end_time - 2) &
-        (dataframe.Year == 2022) &(dataframe.Month == 'May') &
+        (dataframe.Year == 2022) & (dataframe.Month == 'May') &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-01')
-        ].sort_values(by = ['Date_Time'])['Hourly_Counts'])
+        ].sort_values(by=['Date_Time'])['Hourly_Counts'])
     sensor3_pastday = np.array(dataframe[
         (dataframe.Day == yesterday) &
         (dataframe.Sensor_ID == sensor_id) &
@@ -199,9 +202,11 @@ def test_data_for_count(dataframe, nearby, sensor_id, start_time, end_time, day)
         (dataframe.Year == 2022) &
         (dataframe.Month == 'May') &
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-31')
-        ].sort_values(by = ['Date_Time'])['Hourly_Counts'])
-    print(rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1, sensor3_pastday)
-    return (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1, sensor3_pastday)
+        ].sort_values(by=['Date_Time'])['Hourly_Counts'])
+    print(rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1,
+          sensor3_pastday)
+    return (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1,
+            sensor3_pastday)
 
 
 def compute_distance(distance, merge_df):
@@ -231,7 +236,7 @@ def pearson_distance(pearson_coef, compare_merged):
         count_sensor2 = compare_merged[
             compare_merged.Date_Time == day]['Hourly_Counts_y']
         pearson_coef[day] = np.abs(np.corrcoef(
-            np.array(count_sensor1),np.array(count_sensor2))[1,0])
+            np.array(count_sensor1), np.array(count_sensor2))[1, 0])
 
     return pearson_coef
 
