@@ -30,7 +30,7 @@ def time_series_for_two(
     Save the images as png image. If seg not empty, then the time series is
     segmented, else, it is the complete dataframe.
     """
-    _, ax_left = plt.subplots(figsize=(17, 5))
+    fig, ax_left = plt.subplots(figsize=(17, 5))
     ax_right = ax_left.twinx()
 
     ax_left.plot(
