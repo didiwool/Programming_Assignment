@@ -76,12 +76,10 @@ print('\n')
 # answer for question 12
 print('Output of question 12: ')
 daily_difference(df, 3, 9)
-print('\n')
 
 # answer for question 13
 print('Output of question 13: ')
 sensor_correlation(df, 3, 9)
-print('\n')
 
 # answer for question 15
 print('Output of question 15: ')
@@ -89,4 +87,3 @@ invest_travel(df, TRAVEL_FILE)
 invest_activecases_ped(df, COVID_FILE)
 invest_lockdown(df)
 print('Plot of question 15 saved')
-print('\n')

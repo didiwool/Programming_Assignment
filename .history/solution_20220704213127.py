@@ -155,26 +155,22 @@ def pedestrian_hist(dataframe, year1, year2):
     each day of week. With pedestrian data from df, generate and save one plot
     each for year1 and year2.
     """
-    # read data of year1 and get the mean of daily pedestrian count
     df1 = pd.DataFrame(dataframe[dataframe.Year == year1].groupby(
             [dataframe.Date_Time.dt.strftime('%y-%m-%d'), dataframe.Day]).
             agg({'Hourly_Counts': 'sum'})).groupby('Day').mean()
     df1 = daily_count(df1)
 
-    # plot histogram of year1 data
     title1 = "Mean daily overall pedestrian count for each day of week in " \
         + str(year1)
     file1 = str(year1) + "_busy_daily.png"
     bar_with_title(df1, title1, "Day of week",
                    "mean daily overall pesdestrain count", file1)
 
-    # read data of year2 and get the mean of daily pedestrian count
     df2 = pd.DataFrame(dataframe[dataframe.Year == year2].groupby(
         [dataframe.Date_Time.dt.strftime('%y-%m-%d'),
          dataframe.Day]).agg({'Hourly_Counts': 'sum'})).groupby('Day').mean()
     df2 = daily_count(df2)
 
-    # plot histogram of year2 data
     title2 = "Mean daily overall pedestrian count for each day of week in " + \
         str(year2)
     file2 = str(year2) + "_busy_daily.png"
@@ -188,8 +184,6 @@ def sensor_hist(dataframe, year, start_no, end_no):
     Plot histogram(bar plot) for mean daily overall pedestrian count for
     sensors from start_no to end_no. Data
     """
-    # get the new dataframe for the mean of daily pedestrian count
-    # the filter is year, sensor_id which is 1-20 in this question
     new_df = pd.DataFrame(pd.DataFrame(dataframe[
         (dataframe.Year == year) &
         (dataframe.Sensor_ID.isin(range(start_no, end_no + 1)))]
@@ -197,8 +191,6 @@ def sensor_hist(dataframe, year, start_no, end_no):
             dataframe.Sensor_ID,
             dataframe.Date_Time.dt.strftime('%y-%m-%d')])
         .agg({'Hourly_Counts': 'sum'}))).groupby('Sensor_ID').mean()
-    
-    # plot the histogram using data
     title = "Mean daily overall pedestrian count for sensor 1-20 in " + \
         str(year)
     file = str(year) + "_busy_sensor.png"
@@ -213,7 +205,6 @@ def pedestrian_hist_rain(dataframe, year1, year2):
     for each raining day of week. With pedestrian data from df, generate
     and save one plot each for year1 and year2.
     """
-    # get the data of year1 of rainy days
     df1 = pd.DataFrame(dataframe[
         (dataframe.Year == year1) &
         (dataframe["Rainfall amount (millimetres)"] > 0)]
@@ -222,17 +213,14 @@ def pedestrian_hist_rain(dataframe, year1, year2):
             dataframe.Day])
         .agg({'Hourly_Counts': 'sum'})).groupby('Day').mean()
 
-    # get the daily count using helper functions
     df1 = daily_count(df1)
 
-    #plot the histogram
     title1 = "Mean daily overall pedestrian count" + \
         "for each raining day of week in " + str(year1)
     file1 = str(year1) + "_busy_daily_rain.png"
     bar_with_title(df1, title1, "Day of week",
                    "mean daily overall pesdestrain count", file1)
 
-    # get the data of year2 of rainy days
     df2 = pd.DataFrame(dataframe[
         (dataframe.Year == year2) &
         (dataframe["Rainfall amount (millimetres)"] > 0)]
@@ -243,7 +231,6 @@ def pedestrian_hist_rain(dataframe, year1, year2):
 
     df2 = daily_count(df2)
 
-    #plot the histogram
     title2 = "Mean daily overall pedestrian count for" + \
         "each raining day of week in " + str(year2)
     file2 = str(year2) + "_busy_daily_rain.png"
@@ -258,7 +245,6 @@ def pedestrian_hist_rain_temp(dataframe, year1, year2, max_temp):
     for each raining, cold day of week. With pedestrian data from df,
     generate and save one plot each for year1 and year2.
     """
-    # get data of year1 of rainy days and with the limit of max_temp
     df1 = pd.DataFrame(dataframe[
         (dataframe.Year == year1) &
         (dataframe["Rainfall amount (millimetres)"] > 0) &
@@ -267,18 +253,15 @@ def pedestrian_hist_rain_temp(dataframe, year1, year2, max_temp):
             dataframe.Date_Time.dt.strftime('%y-%m-%d'),
             dataframe.Day]).agg({'Hourly_Counts': 'sum'}))
 
-    # get the daily count using helper functions
     df1 = pd.DataFrame(df1[df1.Hourly_Counts != 0]).groupby('Day').mean()
     df1 = daily_count(df1)
 
-    # plot the histogram using fetched data
     title1 = "Mean daily overall pedestrian count for each " + \
         "cold, raining day of week in " + str(year1)
     file1 = str(year1) + "_busy_daily_rain_cold.png"
     bar_with_title(df1, title1, "Day of week",
                    "mean daily overall pesdestrain count", file1)
 
-    # get data of year2 of rainy days and with the limit of max_temp
     df2 = pd.DataFrame(dataframe[(
         dataframe.Year == year2) &
         (dataframe["Rainfall amount (millimetres)"] > 0) &
@@ -286,12 +269,9 @@ def pedestrian_hist_rain_temp(dataframe, year1, year2, max_temp):
         .groupby([
             dataframe.Date_Time.dt.strftime('%y-%m-%d'),
             dataframe.Day]).agg({'Hourly_Counts': 'sum'}))
-
-    # get the daily count using helper functions
     df2 = pd.DataFrame(df2[df2.Hourly_Counts != 0]).groupby('Day').mean()
     df2 = daily_count(df2)
 
-    # plot the histogram using fetched data
     title2 = "Mean daily overall pedestrian count for" + \
         " each cold, raining day of week in " + str(year2)
     file2 = str(year2) + "_busy_daily_rain_cold.png"
@@ -309,24 +289,19 @@ def time_series_sensor(dataframe, year1, year2, month):
     change.
     Plot the bar plot of the two months of the greatest changed sensor.
     """
-    # get the data of year1 and specific month
     df1 = pd.DataFrame(dataframe[
         (dataframe.Year == year1) & (dataframe.Month == month)]
         .groupby([
             dataframe.Sensor_ID, dataframe.Date_Time.dt.strftime('%m-%d')])
         .agg({"Hourly_Counts": "sum"}))
-    # get the data of year2 and specific month
     df2 = pd.DataFrame(dataframe[
         (dataframe.Year == year2) & (dataframe.Month == month)]
         .groupby([
             dataframe.Sensor_ID, dataframe.Date_Time.dt.strftime('%m-%d')])
         .agg({"Hourly_Counts": "sum"}))
-
-    # merge the dataframe of year1 and year2
     compare_merged = pd.merge(
         left=df1, right=df2, left_on=['Sensor_ID', 'Date_Time'],
         right_on=['Sensor_ID', 'Date_Time'])
-    # initiate the dictionary to store distance
     e_distance = defaultdict(float)
     limit = dataframe['Sensor_ID'].max()
 
@@ -393,47 +368,45 @@ def model_for_count(dataframe, sensor_id, start_time, end_time):
     - pedestrian count from sensor 3 in the past hours
     - get the count of a nearby
     - pedestrian count of sensor 3 the same time yesterday
+
     Print the final equation of the model.
     Fit the model with last month from the time period, return the accuracy
     metric for each day of the week as a dictionary.
     """
-    # get a nearby sensor id according to the target sensor
     if sensor_id == 1:
         nearby = 2
     else:
         nearby = sensor_id - 1
 
-    # prepare the data for training the linear model
-    train_data = np.array(dataframe[ \
-        (dataframe.Sensor_ID == sensor_id) & \
-        (dataframe.Time >= start_time) & (dataframe.Time <= end_time - 1) & \
-        (dataframe.Year == 2022) & \
-        (dataframe.Month.isin(["January", "February", "March", "April"])) & \
-        (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01') \
+    train_data = np.array(dataframe[
+        (dataframe.Sensor_ID == sensor_id) &
+        (dataframe.Time >= start_time) & (dataframe.Time <= end_time - 1) &
+        (dataframe.Year == 2022) &
+        (dataframe.Month.isin(["January", "February", "March", "April"])) &
+        (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01')
         ].sort_values(by=['Date_Time'])['Hourly_Counts'])
-    (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1, \
+    (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1,
         sensor3_pastday) \
         = data_for_count(dataframe, nearby, sensor_id, start_time, end_time)
-    factor = np.concatenate(( \
-        rain_prev.reshape(-1, 1), solar_prev.reshape(-1, 1), \
-        temp_prev.reshape(-1, 1), sensor3_past1.reshape(-1, 1), \
-        nearby_past1.reshape(-1, 1), \
+    factor = np.concatenate((
+        rain_prev.reshape(-1, 1), solar_prev.reshape(-1, 1),
+        temp_prev.reshape(-1, 1), sensor3_past1.reshape(-1, 1),
+        nearby_past1.reshape(-1, 1),
         sensor3_pastday.reshape(-1, 1)), axis=1)
     target = train_data
-    # fit the linear model
+
     model = LinearRegression().fit(factor, target)
-    # get the info of the model
     train_error = model.score(factor, target)
     print(f"coefficient of determination: {train_error}")
     print(f"intercept: {model.intercept_}")
     print(f"coefficients: {model.coef_}")
 
     result = {}
-    # compute test data for each day of week
+    # compute test data
     for day in WEEK:
-        (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1, \
+        (rain_prev, solar_prev, temp_prev, sensor3_past1, nearby_past1,
             sensor3_pastday) \
-            = test_data_for_count( \
+            = test_data_for_count(
                 dataframe, nearby, sensor_id, start_time, end_time, day)
         x_test = np.concatenate((
             rain_prev.reshape(-1, 1), solar_prev.reshape(-1, 1),
@@ -449,12 +422,8 @@ def model_for_count(dataframe, sensor_id, start_time, end_time):
 
         y_predict = model.predict(x_test)
         result[day] = mean_squared_error(y_test, y_predict)
-
-    # print the accuracy metric of each day of week
     print('Mean squared error of each day of week is: ')
     print(result)
-
-    # get the day having the max and min value
     output = find_extreme_item(result)
     return output
 
@@ -466,15 +435,14 @@ def unusual_day(dataframe):
     - rainfall of the previous day;
     - solar exposure of the previous day;
     - max temp of previous day;
-    - get the count of a nearby sensor the same time yeasterday
+    - pedestrian count from sensor 3 in the past hours
+    - get the count of a nearby
     - pedestrian count of sensor 3 the same time yesterday
     Print the three most unusal day, plot the predictions with actual values
     for the three days.
     """
-    # the id of nearby sensor
     nearby = 2
 
-    # prepare the train data for linear model
     train_data = np.array(dataframe[
         (dataframe.Sensor_ID == 3) & (dataframe.Year == 2022) &
         (dataframe.Month.isin(
@@ -512,34 +480,29 @@ def unusual_day(dataframe):
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-31')]
         .sort_values(by=['Date_Time'])['Hourly_Counts'])
 
-    # concat all variables for training
     factors = np.concatenate((
         rain_prev.reshape(-1, 1), solar_prev.reshape(-1, 1),
         temp_prev.reshape(-1, 1), sensor2_past.reshape(-1, 1),
         sensor3_past.reshape(-1, 1)), axis=1)
 
-    # fit the model
     model = LinearRegression().fit(factors, train_data)
-    # get the data for prediction
+
     new_df = dataframe[
         (dataframe.Sensor_ID == 3) & (dataframe.Time >= 0)
         & (dataframe.Time <= 23) & (dataframe.Year == 2022)
         & (dataframe.Month.isin(
             ["January", "February", "March", "April", "May"]))
         & (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01')]
-    # get the adsolute error by actual data and predicted data
     new_df["distance"] = abs(train_data - model.predict(factors))
     new_df = new_df.groupby([
         'Month', 'Mdate', 'Sensor_ID', 'Day', 'Year',
         'Rainfall amount (millimetres)', 'Maximum temperature (Degree C)',
         'Daily global solar exposure (MJ/m*m)']) \
         .agg({'distance': 'sum'}).reset_index()
-    # get the top3 unusual day
     result = new_df.sort_values(
         ["distance", "Month", "Mdate"], ascending=False) \
         .reset_index().head(3)
 
-    # plot the graph for each unusual day
     for i in range(3):
         unusual_day_plot(dataframe, result, i, 3, nearby, model)
 
@@ -552,8 +515,6 @@ def daily_difference(dataframe, sensor1, sensor2):
     euclidean distance between the two time series, print the day with maximum
     and minimum difference.
     """
-    # get the required data for the first sensor,
-    # which is sensor 3 in thisquestion
     sensor3 = dataframe[
         (dataframe.Year == 2022) &
         (dataframe.Month == 'May') &
@@ -561,8 +522,6 @@ def daily_difference(dataframe, sensor1, sensor2):
             "Time", "Date_Time", "Hourly_Counts"]]
     sensor3["Date_Time"] = sensor3.Date_Time.dt.strftime('%m-%d')
 
-    # get the required data for the second sensor,
-    # which is sensor 9 in thisquestion
     sensor9 = dataframe[
         (dataframe.Year == 2022) &
         (dataframe.Month == 'May') &
@@ -588,8 +547,6 @@ def sensor_correlation(dataframe, sensor1, sensor2):
     series, print the day with maximum and minimum absolute pearson
     correlation.
     """
-    # get the required data for the first sensor,
-    # which is sensor 3 in thisquestion
     sensor3 = dataframe[(
         dataframe.Year == 2022)
         & (dataframe.Month == 'May') & (dataframe.Sensor_ID == sensor1)
@@ -598,8 +555,6 @@ def sensor_correlation(dataframe, sensor1, sensor2):
             "Time", "Date_Time", "Hourly_Counts"]]
     sensor3["Date_Time"] = sensor3.Date_Time.dt.strftime('%m-%d')
 
-    # get the required data for the second sensor,
-    # which is sensor 9 in thisquestion
     sensor9 = dataframe[(
         dataframe.Year == 2022)
         & (dataframe.Month == 'May') & (dataframe.Sensor_ID == sensor2)
@@ -613,7 +568,7 @@ def sensor_correlation(dataframe, sensor1, sensor2):
         left_on=['Time', 'Date_Time'], right_on=['Time', 'Date_Time'])
     pearson_coef = defaultdict(float)
 
-    # compute pearson coefficient
+    # compute euclidean distance
     pearson_coef = pearson_distance(pearson_coef, compare_merged)
     # find maximum
     diff_conclusion(pearson_coef, \

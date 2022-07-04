@@ -518,28 +518,24 @@ def unusual_day(dataframe):
         temp_prev.reshape(-1, 1), sensor2_past.reshape(-1, 1),
         sensor3_past.reshape(-1, 1)), axis=1)
 
-    # fit the model
     model = LinearRegression().fit(factors, train_data)
-    # get the data for prediction
+
     new_df = dataframe[
         (dataframe.Sensor_ID == 3) & (dataframe.Time >= 0)
         & (dataframe.Time <= 23) & (dataframe.Year == 2022)
         & (dataframe.Month.isin(
             ["January", "February", "March", "April", "May"]))
         & (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01')]
-    # get the adsolute error by actual data and predicted data
     new_df["distance"] = abs(train_data - model.predict(factors))
     new_df = new_df.groupby([
         'Month', 'Mdate', 'Sensor_ID', 'Day', 'Year',
         'Rainfall amount (millimetres)', 'Maximum temperature (Degree C)',
         'Daily global solar exposure (MJ/m*m)']) \
         .agg({'distance': 'sum'}).reset_index()
-    # get the top3 unusual day
     result = new_df.sort_values(
         ["distance", "Month", "Mdate"], ascending=False) \
         .reset_index().head(3)
 
-    # plot the graph for each unusual day
     for i in range(3):
         unusual_day_plot(dataframe, result, i, 3, nearby, model)
 

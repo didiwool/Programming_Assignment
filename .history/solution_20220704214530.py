@@ -393,6 +393,7 @@ def model_for_count(dataframe, sensor_id, start_time, end_time):
     - pedestrian count from sensor 3 in the past hours
     - get the count of a nearby
     - pedestrian count of sensor 3 the same time yesterday
+
     Print the final equation of the model.
     Fit the model with last month from the time period, return the accuracy
     metric for each day of the week as a dictionary.
@@ -466,15 +467,14 @@ def unusual_day(dataframe):
     - rainfall of the previous day;
     - solar exposure of the previous day;
     - max temp of previous day;
-    - get the count of a nearby sensor the same time yeasterday
+    - pedestrian count from sensor 3 in the past hours
+    - get the count of a nearby
     - pedestrian count of sensor 3 the same time yesterday
     Print the three most unusal day, plot the predictions with actual values
     for the three days.
     """
-    # the id of nearby sensor
     nearby = 2
 
-    # prepare the train data for linear model
     train_data = np.array(dataframe[
         (dataframe.Sensor_ID == 3) & (dataframe.Year == 2022) &
         (dataframe.Month.isin(
@@ -512,34 +512,29 @@ def unusual_day(dataframe):
         (dataframe.Date_Time.dt.strftime('%m-%d') != '05-31')]
         .sort_values(by=['Date_Time'])['Hourly_Counts'])
 
-    # concat all variables for training
     factors = np.concatenate((
         rain_prev.reshape(-1, 1), solar_prev.reshape(-1, 1),
         temp_prev.reshape(-1, 1), sensor2_past.reshape(-1, 1),
         sensor3_past.reshape(-1, 1)), axis=1)
 
-    # fit the model
     model = LinearRegression().fit(factors, train_data)
-    # get the data for prediction
+
     new_df = dataframe[
         (dataframe.Sensor_ID == 3) & (dataframe.Time >= 0)
         & (dataframe.Time <= 23) & (dataframe.Year == 2022)
         & (dataframe.Month.isin(
             ["January", "February", "March", "April", "May"]))
         & (dataframe.Date_Time.dt.strftime('%m-%d') != '01-01')]
-    # get the adsolute error by actual data and predicted data
     new_df["distance"] = abs(train_data - model.predict(factors))
     new_df = new_df.groupby([
         'Month', 'Mdate', 'Sensor_ID', 'Day', 'Year',
         'Rainfall amount (millimetres)', 'Maximum temperature (Degree C)',
         'Daily global solar exposure (MJ/m*m)']) \
         .agg({'distance': 'sum'}).reset_index()
-    # get the top3 unusual day
     result = new_df.sort_values(
         ["distance", "Month", "Mdate"], ascending=False) \
         .reset_index().head(3)
 
-    # plot the graph for each unusual day
     for i in range(3):
         unusual_day_plot(dataframe, result, i, 3, nearby, model)
 
@@ -552,8 +547,6 @@ def daily_difference(dataframe, sensor1, sensor2):
     euclidean distance between the two time series, print the day with maximum
     and minimum difference.
     """
-    # get the required data for the first sensor,
-    # which is sensor 3 in thisquestion
     sensor3 = dataframe[
         (dataframe.Year == 2022) &
         (dataframe.Month == 'May') &
@@ -561,8 +554,6 @@ def daily_difference(dataframe, sensor1, sensor2):
             "Time", "Date_Time", "Hourly_Counts"]]
     sensor3["Date_Time"] = sensor3.Date_Time.dt.strftime('%m-%d')
 
-    # get the required data for the second sensor,
-    # which is sensor 9 in thisquestion
     sensor9 = dataframe[
         (dataframe.Year == 2022) &
         (dataframe.Month == 'May') &
@@ -588,8 +579,6 @@ def sensor_correlation(dataframe, sensor1, sensor2):
     series, print the day with maximum and minimum absolute pearson
     correlation.
     """
-    # get the required data for the first sensor,
-    # which is sensor 3 in thisquestion
     sensor3 = dataframe[(
         dataframe.Year == 2022)
         & (dataframe.Month == 'May') & (dataframe.Sensor_ID == sensor1)
@@ -598,8 +587,6 @@ def sensor_correlation(dataframe, sensor1, sensor2):
             "Time", "Date_Time", "Hourly_Counts"]]
     sensor3["Date_Time"] = sensor3.Date_Time.dt.strftime('%m-%d')
 
-    # get the required data for the second sensor,
-    # which is sensor 9 in thisquestion
     sensor9 = dataframe[(
         dataframe.Year == 2022)
         & (dataframe.Month == 'May') & (dataframe.Sensor_ID == sensor2)
@@ -613,7 +600,7 @@ def sensor_correlation(dataframe, sensor1, sensor2):
         left_on=['Time', 'Date_Time'], right_on=['Time', 'Date_Time'])
     pearson_coef = defaultdict(float)
 
-    # compute pearson coefficient
+    # compute euclidean distance
     pearson_coef = pearson_distance(pearson_coef, compare_merged)
     # find maximum
     diff_conclusion(pearson_coef, \
