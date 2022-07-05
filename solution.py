@@ -696,46 +696,46 @@ def join_activecases_ped(dataframe, file):
     covid_active['Date_Time'] = covid_active['Date_Time'].astype(
         'datetime64[ns]')
 
-    # join covid_active dataframe to the pedestrain data frame
-    covid_pedestrain_df = pd.merge(
+    # join covid_active dataframe to the pedestrian data frame
+    covid_pedestrian_df = pd.merge(
         df_temp, covid_active, left_on='Date_Time', right_on='Date_Time')
-    covid_pedestrain_df = covid_pedestrain_df.groupby(
-        covid_pedestrain_df.Date_Time, as_index=True).agg(
+    covid_pedestrian_df = covid_pedestrian_df.groupby(
+        covid_pedestrian_df.Date_Time, as_index=True).agg(
             {'Hourly_Counts': 'sum', 'All active cases': 'mean'})
 
     # since the data fluctuates a lot, we apply a 7 days rolling average to
     # smooth out the data
-    covid_pedestrain_df['All active cases_smoothed'] = covid_pedestrain_df[
+    covid_pedestrian_df['All active cases_smoothed'] = covid_pedestrian_df[
         'All active cases'].rolling(window=7).mean()
-    covid_pedestrain_df['Hourly_Counts_smoothed'] = \
-        covid_pedestrain_df['Hourly_Counts'].rolling(window=7).mean()
-    covid_pedestrain_df.reset_index(inplace=True)
+    covid_pedestrian_df['Hourly_Counts_smoothed'] = \
+        covid_pedestrian_df['Hourly_Counts'].rolling(window=7).mean()
+    covid_pedestrian_df.reset_index(inplace=True)
 
-    return covid_pedestrain_df
+    return covid_pedestrian_df
 
 
 def invest_activecases_ped(dataframe, file):
     """
-    Investigate relationship between pedestrain count and active covid cases
-    Take pedestrain dataframe df, active covid cases file, plot a time series
+    Investigate relationship between pedestrian count and active covid cases
+    Take pedestrian dataframe df, active covid cases file, plot a time series
     and save the time series comparison plots.
     """
     # join dataframe
-    covid_pedestrain_df = join_activecases_ped(dataframe, file)
+    covid_pedestrian_df = join_activecases_ped(dataframe, file)
 
-    # plot and save covid vs pedestrain
-    time_series_for_two(covid_pedestrain_df[pd.to_datetime(
-        covid_pedestrain_df.Date_Time) < '2021-08-01'],
+    # plot and save covid vs pedestrian
+    time_series_for_two(covid_pedestrian_df[pd.to_datetime(
+        covid_pedestrian_df.Date_Time) < '2021-08-01'],
         "All active cases_smoothed", "Hourly_Counts_smoothed",
-        'Daily active covid-19 cases', 'Daily pedestrain count',
-        "Time serie data of daily active covid-19 cases and daily " \
-        "pedestrain counts before August 2021", '1')
-    time_series_for_two(covid_pedestrain_df[pd.to_datetime(
-        covid_pedestrain_df.Date_Time) >= '2021-08-01'],
+        'Daily active covid-19 cases', 'Daily pedestrian counts',
+        "Time series plot of daily active covid-19 cases and daily " \
+        "pedestrian counts before August 2021", '1')
+    time_series_for_two(covid_pedestrian_df[pd.to_datetime(
+        covid_pedestrian_df.Date_Time) >= '2021-08-01'],
         "All active cases_smoothed", "Hourly_Counts_smoothed",
-        'Daily active covid-19 cases', 'Daily pedestrain count',
-        "Time serie data of daily active covid-19 cases and daily " \
-        "pedestrain counts after August 2021", '2')
+        'Daily active covid-19 cases', 'Daily pedestrian counts',
+        "Time series plot of daily active covid-19 cases and daily " \
+        "pedestrian counts after August 2021", '2')
 
 
 def invest_travel(dataframe, file):
@@ -751,8 +751,8 @@ def invest_travel(dataframe, file):
     # plot and save arrival vs pedestrian
     time_series_for_two(
         monthly_overall, "Arrival", "Hourly_Counts",
-        'Internation arrival monthly', 'Daily pedestrian count',
-        "Time serie data of monthly " \
+        'Monthly international arrivals', 'Daily pedestrian counts',
+        "Time series plot of monthly " \
         "international arrivals and average pedestrian counts")
 
 
@@ -827,7 +827,7 @@ def invest_lockdown(dataframe):
     # plot the time series plot
     df_time_series.plot(
         x="Date_Time", y="Hourly_Counts",
-        title="Time series plot of daily pedestrain counts" \
+        title="Time series plot of daily pedestrian counts" \
         " (Red = Victoria under lockdown)", figsize=(12, 5))
     plt.axvspan('2021-02-12', '2021-02-17', facecolor='r', alpha=0.3)
     plt.axvspan('2021-05-27', '2021-06-10', facecolor='r', alpha=0.3)
@@ -848,7 +848,7 @@ def local_anomaly(dataframe, start_date, end_date="2022-05-31"):
         (dataframe["Date_Time"] <= end_date)]
 
     df_year["Outlier"] = 0
-    bounds = find_bounds(df_year, siglevel=0.99)
+    bounds = find_bounds(df_year, siglevel=0.999)
     df_year = df_year.merge(bounds, how="inner", on=["Sensor_ID", "Time"])
     df_year.loc[
         (df_year["Hourly_Counts"] > df_year["Upper_Bound"]), "Outlier"] = 1
@@ -860,5 +860,4 @@ def local_anomaly(dataframe, start_date, end_date="2022-05-31"):
     if(start_date == "2021-01-01" and end_date == "2021-12-31"):
         plot_unusual(df_year=df_year, month="December", sensor=41)
     elif start_date == "2022-01-01":
-        plot_unusual(df_year=df_year, month="April", sensor=3)
-        plot_unusual(df_year=df_year, month="April", sensor=4)
+        plot_unusual(df_year=df_year, month="March", sensor=29)
