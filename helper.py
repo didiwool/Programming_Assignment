@@ -244,10 +244,10 @@ def compute_distance(distance, merge_df):
 def pearson_distance(pearson_coef, compare_merged):
     """
     Compute and return the pearson correlation coefficient.
-    Take an empty dictionary distance and compute the correlation for the two
-    Hourly_Counts in compare_merged.
+    Take an empty dictionary pearson_coef and compute the correlation for the
+    two Hourly_Counts in compare_merged.
     """
-    # get the person coefficient of each day of week
+    # get the person coefficient of each day
     for day in compare_merged['Date_Time'].unique():
         count_sensor1 = compare_merged[
             compare_merged.Date_Time == day]['Hourly_Counts_x']
@@ -272,10 +272,10 @@ def diff_conclusion(e_distance, measure):
     # print the required output using the max and min info of data
     print(
         "Day with the greatest " + measure + " is " + str(max_day) +
-        ", and the value is " + str(round(max_change, 2)) + ".")
+        ", and the value is " + str(round(max_change, 4)) + ".")
     print(
         "Day with the least " + measure + " is " + str(min_day) +
-        ", and the value is " + str(round(min_change, 2)) + ".")
+        ", and the value is " + str(round(min_change, 4)) + ".")
 
 
 def find_extreme_item(result):

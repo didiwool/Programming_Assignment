@@ -611,7 +611,7 @@ def sensor_correlation(dataframe, sensor1, sensor2):
     sensor9 = dataframe[(
         dataframe.Year == 2022)
         & (dataframe.Month == 'May') & (dataframe.Sensor_ID == sensor2)
-        & (dataframe.Time >= 9) & (dataframe.Time <= 17)
+        & (dataframe.Time >= 9) & (dataframe.Time < 17)
         & (dataframe.Day.isin(WEEKDAY))][[
             "Time", "Date_Time", "Hourly_Counts"]]
     sensor9["Date_Time"] = sensor9.Date_Time.dt.strftime('%m-%d')
