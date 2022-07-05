@@ -652,11 +652,17 @@ def join_travel(dataframe, file):
     travel_df['Date_Time'] = pd.to_datetime(
         travel_df['Date_Time']).dt.strftime('%Y-%m')
 
-    # join covid to pedestrian data frame
+    daily_sum = pd.DataFrame(
+        df_temp.groupby(['Date_Time'], as_index=False)
+        .agg({'Hourly_Counts': 'sum'}))
+    daily_sum.columns = ['Date_Time', 'Daily_Counts']
+
+    df_new = pd.merge(df_temp, daily_sum, on='Date_Time', how = 'left')
+
     monthly_overall = pd.DataFrame(
-        df_temp.groupby(pd.to_datetime(
-            df_temp.Date_Time).dt.strftime('%Y-%m'))
-        .agg({'Hourly_Counts': 'mean'}))
+        df_new.groupby(pd.to_datetime(
+        df_temp.Date_Time).dt.strftime('%Y-%m'))
+        .agg({'Daily_Counts': 'mean'}))
 
     # join travel to pedestrian data frame
     monthly_overall = pd.merge(
@@ -750,7 +756,7 @@ def invest_travel(dataframe, file):
 
     # plot and save arrival vs pedestrian
     time_series_for_two(
-        monthly_overall, "Arrival", "Hourly_Counts",
+        monthly_overall, "Arrival", "Daily_Counts",
         'Monthly international arrivals', 'Daily pedestrian counts',
         "Time series plot of monthly " \
         "international arrivals and average pedestrian counts")
