@@ -231,7 +231,7 @@ def pedestrian_hist_rain(dataframe, year1, year2):
     df1 = daily_count(df1)
 
     # plot the histogram
-    title1 = "Mean daily overall pedestrian count" + \
+    title1 = "Mean daily overall pedestrian count " + \
         "for each raining day of week in " + str(year1)
     file1 = str(year1) + "_busy_daily_rain.png"
     bar_with_title(df1, title1, "Day of week",
@@ -249,7 +249,7 @@ def pedestrian_hist_rain(dataframe, year1, year2):
     df2 = daily_count(df2)
 
     # plot the histogram
-    title2 = "Mean daily overall pedestrian count for" + \
+    title2 = "Mean daily overall pedestrian count for " + \
         "each raining day of week in " + str(year2)
     file2 = str(year2) + "_busy_daily_rain.png"
     bar_with_title(df2, title2, "Day of week",
@@ -728,14 +728,14 @@ def invest_activecases_ped(dataframe, file):
         covid_pedestrain_df.Date_Time) < '2021-08-01'],
         "All active cases_smoothed", "Hourly_Counts_smoothed",
         'Daily active covid-19 cases', 'Daily pedestrain count',
-        "Time serie data for daily active covid-19 cases and daily \
-        pedestrain count before August 2021", '1')
+        "Time serie data of daily active covid-19 cases and daily " \
+        "pedestrain counts before August 2021", '1')
     time_series_for_two(covid_pedestrain_df[pd.to_datetime(
         covid_pedestrain_df.Date_Time) >= '2021-08-01'],
         "All active cases_smoothed", "Hourly_Counts_smoothed",
         'Daily active covid-19 cases', 'Daily pedestrain count',
-        "Time serie data for daily active covid-19 cases and daily \
-        pedestrain count after August 2021", '2')
+        "Time serie data of daily active covid-19 cases and daily " \
+        "pedestrain counts after August 2021", '2')
 
 
 def invest_travel(dataframe, file):
@@ -752,8 +752,8 @@ def invest_travel(dataframe, file):
     time_series_for_two(
         monthly_overall, "Arrival", "Hourly_Counts",
         'Internation arrival monthly', 'Daily pedestrian count',
-        "Time serie data for monthly \
-        internation arrival and average pedestrian count")
+        "Time serie data of monthly " \
+        "international arrivals and average pedestrian counts")
 
 
 def invest_lockdown(dataframe):
@@ -827,8 +827,8 @@ def invest_lockdown(dataframe):
     # plot the time series plot
     df_time_series.plot(
         x="Date_Time", y="Hourly_Counts",
-        title="Time series plot of daily pedestrain counts \
-        (Red = Victoria under lockdown)", figsize=(12, 5))
+        title="Time series plot of daily pedestrain counts" \
+        " (Red = Victoria under lockdown)", figsize=(12, 5))
     plt.axvspan('2021-02-12', '2021-02-17', facecolor='r', alpha=0.3)
     plt.axvspan('2021-05-27', '2021-06-10', facecolor='r', alpha=0.3)
     plt.axvspan('2021-07-15', '2021-07-20', facecolor='r', alpha=0.3)
