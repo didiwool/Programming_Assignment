@@ -11,6 +11,45 @@ For the test_case.py, there are four new csv files for testing.
 
 **Structure and Modules**
 
+Following are the functions in each module:
+helper.py:
+  - get_count_hourly
+  - summary_hourly_count
+  - daily_count
+  - data_for_count
+  - test_data_for_count
+  - compute_distance
+  - pearson_distance
+  - diff_conclusion
+  - find_extreme_item
+  - find_bounds
+  
+graphplot.py:
+  - bar_with_title
+  - time_series_for_two
+  - unusual_day_plot
+  - plot_unusual
+
+solution.py:
+  - data_cleansing
+  - pedestrian_stats
+  - pedestrian_scatter
+  - pedestrian_hist
+  - sensor_hist
+  - pedestrian_hist_rain
+  - pedestrian_hist_rain_temp
+  - time_series_sensor
+  - model_for_count
+  - unusual_day
+  - daily_difference
+  - sensor_correlation
+  - join_travel
+  - join_activecases_ped
+  - invest_activecases_ped
+  - invest_travel
+  - invest_lockdown
+  - local_anomaly
+
 1.) *Helper Module and Graphplot Module*
 
 The Helper Module has been created to contain functions that can be used to get commonly used information that is used for the solutions for each question. 
