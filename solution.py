@@ -833,3 +833,83 @@ def invest_lockdown(dataframe):
     plt.axvspan('2021-08-05', '2021-10-21', facecolor='r', alpha=0.3)
 
     plt.savefig("lockdown_impace_time_series.png", bbox_inches='tight')
+
+
+def find_bounds(df_year, siglevel):
+    """
+    Identify outlier points of Pedestrian Count to identify local anomalies
+    in data
+    Inputs include dataframe and percentile (fraction) selected to demarcate
+    outlier points
+    """
+    lst = []
+    sensors = set(df_year["Sensor_ID"])
+    for sensor in sensors:
+        for hour in range(24):
+            lower_bound = df_year[
+                df_year["Time"] == hour]["Hourly_Counts"].quantile(1-siglevel)
+            upper_bound = df_year[
+                df_year["Time"] == hour]["Hourly_Counts"].quantile(siglevel)
+            lst.append([sensor, hour, lower_bound, upper_bound])
+
+    bounds = pd.DataFrame(lst)
+    bounds.columns = ["Sensor_ID", "Time", "Lower_Bound", "Upper_Bound"]
+    return bounds
+
+
+def plot_unusual(df_year, sensor, month):
+    """
+    Plot Pedestrian count data for selected sensor and month from given data
+    frame. Also highlights outlier points with red
+    """
+    # month = "March"
+    # sensor = 3
+    df_plot = df_year[(
+        df_year["Month"] == month) & (df_year["Sensor_ID"] == sensor)]
+    fig, ax1 = plt.subplots()
+
+    # plot scatter plots
+    ax1.scatter(df_plot["Date_Time"], df_plot["Hourly_Counts"])
+    ax1.set_ylabel("Hourly Counts")
+    plt.xlabel('Date')
+    plt.xticks(rotation=90)
+    plt.title(
+        f"Hourly Pedestrian Count with Outliers Highlighted in Red \n \
+        Sensor:{sensor},Sensor Name:{df_plot['Sensor_Name'].values[0]}",
+        fontdict={'fontsize': 16, 'fontweight': 10})
+    df_highlight = df_plot[df_plot["Outlier"] == 1]
+    for i in range(len(df_highlight)):
+        plt.axvspan(
+            df_highlight["Date_Time"].values[i],
+            df_highlight["Date_Time"].values[i], color='red', alpha=0.3)
+    fig.tight_layout()
+    # plt.show()
+    plt.savefig(
+        'Sensor'+str(sensor) + '_' + month + '.png', bbox_inches='tight')
+
+
+def local_anomaly(dataframe, start_date, end_date="2022-05-31"):
+    """
+    Investigate local anomalies in Pedestrian Count data
+    Requires start_date and end_date to denote period of investigation
+    Dataframe is given by dataframe
+    """
+    df_year = dataframe[
+        (dataframe["Date_Time"] >= start_date) &
+        (dataframe["Date_Time"] <= end_date)]
+
+    df_year["Outlier"] = 0
+    bounds = find_bounds(df_year, siglevel=0.99)
+    df_year = df_year.merge(bounds, how="inner", on=["Sensor_ID", "Time"])
+    df_year.loc[
+        (df_year["Hourly_Counts"] > df_year["Upper_Bound"]), "Outlier"] = 1
+    df_summ = df_year.groupby(
+        by=["Month", "Sensor_ID"], as_index=False).agg({'Outlier': 'sum'})
+    df_summ = df_summ.sort_values(["Outlier"], ascending=[False])
+
+    # Examples for demonstration
+    if(start_date == "2021-01-01" and end_date == "2021-12-31"):
+        plot_unusual(df_year=df_year, month="December", sensor=41)
+    elif(start_date == "2022-01-01"):
+        plot_unusual(df_year=df_year, month="April", sensor=3)
+        plot_unusual(df_year=df_year, month="April", sensor=4)
