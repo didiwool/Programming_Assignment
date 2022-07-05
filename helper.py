@@ -295,3 +295,25 @@ def find_extreme_item(result):
         return (max_item, min_item)
     else:
         return('', '')
+
+
+def find_bounds(df_year, siglevel):
+    """
+    Identify outlier points of Pedestrian Count to identify local anomalies
+    in data
+    Inputs include dataframe and percentile (fraction) selected to demarcate
+    outlier points
+    """
+    lst = []
+    sensors = set(df_year["Sensor_ID"])
+    for sensor in sensors:
+        for hour in range(24):
+            lower_bound = df_year[
+                df_year["Time"] == hour]["Hourly_Counts"].quantile(1-siglevel)
+            upper_bound = df_year[
+                df_year["Time"] == hour]["Hourly_Counts"].quantile(siglevel)
+            lst.append([sensor, hour, lower_bound, upper_bound])
+
+    bounds = pd.DataFrame(lst)
+    bounds.columns = ["Sensor_ID", "Time", "Lower_Bound", "Upper_Bound"]
+    return bounds

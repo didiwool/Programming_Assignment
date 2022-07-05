@@ -137,3 +137,34 @@ def unusual_day_plot(dataframe, info, index, sensor_id, nearby, model):
     plt.legend()
     plt.savefig('unusual_daily_plot_' + str(index) + '.png')
     plt.close()
+
+
+def plot_unusual(df_year, sensor, month):
+    """
+    Plot Pedestrian count data for selected sensor and month from given data
+    frame. Also highlights outlier points with red
+    """
+    # month = "March"
+    # sensor = 3
+    df_plot = df_year[(
+        df_year["Month"] == month) & (df_year["Sensor_ID"] == sensor)]
+    fig, ax1 = plt.subplots()
+
+    # plot scatter plots
+    ax1.scatter(df_plot["Date_Time"], df_plot["Hourly_Counts"])
+    ax1.set_ylabel("Hourly Counts")
+    plt.xlabel('Date')
+    plt.xticks(rotation=90)
+    plt.title(
+        f"Hourly Pedestrian Count with Outliers Highlighted in Red \n \
+        Sensor:{sensor},Sensor Name:{df_plot['Sensor_Name'].values[0]}",
+        fontdict={'fontsize': 16, 'fontweight': 10})
+    df_highlight = df_plot[df_plot["Outlier"] == 1]
+    for i in range(len(df_highlight)):
+        plt.axvspan(
+            df_highlight["Date_Time"].values[i],
+            df_highlight["Date_Time"].values[i], color='red', alpha=0.3)
+    fig.tight_layout()
+    # plt.show()
+    plt.savefig(
+        'Sensor'+str(sensor) + '_' + month + '.png', bbox_inches='tight')

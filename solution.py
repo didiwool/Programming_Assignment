@@ -10,11 +10,11 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 import seaborn as sns
 from graphplot import bar_with_title, time_series_for_two, \
-    unusual_day_plot
+    unusual_day_plot, plot_unusual
 from helper import get_count_hourly, summary_hourly_count, \
     daily_count, data_for_count, test_data_for_count, \
     compute_distance, pearson_distance, \
-    diff_conclusion, find_extreme_item
+    diff_conclusion, find_extreme_item, find_bounds
 
 # disable warning messages from pandas
 pd.options.mode.chained_assignment = None
@@ -833,59 +833,6 @@ def invest_lockdown(dataframe):
     plt.axvspan('2021-08-05', '2021-10-21', facecolor='r', alpha=0.3)
 
     plt.savefig("lockdown_impace_time_series.png", bbox_inches='tight')
-
-
-def find_bounds(df_year, siglevel):
-    """
-    Identify outlier points of Pedestrian Count to identify local anomalies
-    in data
-    Inputs include dataframe and percentile (fraction) selected to demarcate
-    outlier points
-    """
-    lst = []
-    sensors = set(df_year["Sensor_ID"])
-    for sensor in sensors:
-        for hour in range(24):
-            lower_bound = df_year[
-                df_year["Time"] == hour]["Hourly_Counts"].quantile(1-siglevel)
-            upper_bound = df_year[
-                df_year["Time"] == hour]["Hourly_Counts"].quantile(siglevel)
-            lst.append([sensor, hour, lower_bound, upper_bound])
-
-    bounds = pd.DataFrame(lst)
-    bounds.columns = ["Sensor_ID", "Time", "Lower_Bound", "Upper_Bound"]
-    return bounds
-
-
-def plot_unusual(df_year, sensor, month):
-    """
-    Plot Pedestrian count data for selected sensor and month from given data
-    frame. Also highlights outlier points with red
-    """
-    # month = "March"
-    # sensor = 3
-    df_plot = df_year[(
-        df_year["Month"] == month) & (df_year["Sensor_ID"] == sensor)]
-    fig, ax1 = plt.subplots()
-
-    # plot scatter plots
-    ax1.scatter(df_plot["Date_Time"], df_plot["Hourly_Counts"])
-    ax1.set_ylabel("Hourly Counts")
-    plt.xlabel('Date')
-    plt.xticks(rotation=90)
-    plt.title(
-        f"Hourly Pedestrian Count with Outliers Highlighted in Red \n \
-        Sensor:{sensor},Sensor Name:{df_plot['Sensor_Name'].values[0]}",
-        fontdict={'fontsize': 16, 'fontweight': 10})
-    df_highlight = df_plot[df_plot["Outlier"] == 1]
-    for i in range(len(df_highlight)):
-        plt.axvspan(
-            df_highlight["Date_Time"].values[i],
-            df_highlight["Date_Time"].values[i], color='red', alpha=0.3)
-    fig.tight_layout()
-    # plt.show()
-    plt.savefig(
-        'Sensor'+str(sensor) + '_' + month + '.png', bbox_inches='tight')
 
 
 def local_anomaly(dataframe, start_date, end_date="2022-05-31"):

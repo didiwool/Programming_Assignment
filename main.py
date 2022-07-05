@@ -21,78 +21,79 @@ TRAVEL_FILE = "340101.xlsx"
 #  data cleansing part
 df = data_cleansing(COUNT_FILE, RAIN_FILE, TEMP_FILE, SOLAR_FILE)
 
-# # answer for question 1
-# df_q1 = pedestrian_stats(df, 2022, [8, 13, 17])
-# print('Output of question 1: ')
-# print(df_q1)
-# print('\n')
+# answer for question 1
+df_q1 = pedestrian_stats(df, 2022, [8, 13, 17])
+print('Output of question 1: ')
+print(df_q1)
+print('\n')
 
-# # answer for question 2
-# pedestrian_scatter(df, 2021, 2022, 'Maximum temperature (Degree C)')
-# print('Plot of question 2 saved.\n')
+# answer for question 2
+pedestrian_scatter(df, 2021, 2022, 'Maximum temperature (Degree C)')
+print('Plot of question 2 saved.\n')
 
-# # answer for question 3
-# pedestrian_scatter(df, 2021, 2022, 'Rainfall amount (millimetres)')
-# print('Plot of question 3 saved.\n')
+# answer for question 3
+pedestrian_scatter(df, 2021, 2022, 'Rainfall amount (millimetres)')
+print('Plot of question 3 saved.\n')
 
-# # answer for question 4
-# pedestrian_scatter(df, 2021, 2022, 'Daily global solar exposure (MJ/m*m)')
-# print('Plot of question 4 saved.\n')
+# answer for question 4
+pedestrian_scatter(df, 2021, 2022, 'Daily global solar exposure (MJ/m*m)')
+print('Plot of question 4 saved.\n')
 
-# # answer for question 5
-# pedestrian_hist(df, 2021, 2022)
-# print('Plot of question 5 saved.\n')
+# answer for question 5
+pedestrian_hist(df, 2021, 2022)
+print('Plot of question 5 saved.\n')
 
-# # answer for question 6
-# sensor_hist(df, 2022, 1, 20)
-# print('Plot of question 6 saved.\n')
+# answer for question 6
+sensor_hist(df, 2022, 1, 20)
+print('Plot of question 6 saved.\n')
 
-# # answer for question 7
-# pedestrian_hist_rain(df, 2021, 2022)
-# print('Plot of question 7 saved.\n')
+# answer for question 7
+pedestrian_hist_rain(df, 2021, 2022)
+print('Plot of question 7 saved.\n')
 
-# # answer for question 8
-# pedestrian_hist_rain_temp(df, 2021, 2022, 20)
-# print('Plot of question 8 saved.\n')
+# answer for question 8
+pedestrian_hist_rain_temp(df, 2021, 2022, 20)
+print('Plot of question 8 saved.\n')
 
-# # answer for question 9
-# print('Output of question 9: ')
-# time_series_sensor(df, 2021, 2022, 'May')
-# print('Plot of quesition 9 saved.\n')
+# answer for question 9
+print('Output of question 9: ')
+time_series_sensor(df, 2021, 2022, 'May')
+print('Plot of quesition 9 saved.\n')
 
-# # answer for question 10
-# print('Output of question 10: ')
-# result = model_for_count(df, 3, 12, 13)
-# print('The most accurate day is ' + str(result[0]))
-# print('The least accurate day is ' + str(result[1]))
-# print('\n')
+# answer for question 10
+print('Output of question 10: ')
+result = model_for_count(df, 3, 12, 13)
+print('The most accurate day is ' + str(result[0]))
+print('The least accurate day is ' + str(result[1]))
+print('\n')
 
-# # answer for question 11
-# print('Output of question 11: ')
-# result = unusual_day(df)
-# print('The three most unusual day are as the following: ')
-# print(result)
-# print('\n')
+# answer for question 11
+print('Output of question 11: ')
+result = unusual_day(df)
+print('The three most unusual day are as the following: ')
+print(result)
+print('\n')
 
-# # answer for question 12
-# print('Output of question 12: ')
-# daily_difference(df, 3, 9)
-# print('\n')
+# answer for question 12
+print('Output of question 12: ')
+daily_difference(df, 3, 9)
+print('\n')
 
-# # answer for question 13
-# print('Output of question 13: ')
-# sensor_correlation(df, 3, 9)
-# print('\n')
+# answer for question 13
+print('Output of question 13: ')
+sensor_correlation(df, 3, 9)
+print('\n')
 
 # answer for question 14
-print('Output of question 14: ')
+
 local_anomaly(df, "2021-01-01", "2021-12-31")
 local_anomaly(df, "2022-01-01")
+print('Plot of question 14 saved.\n')
 
-# # answer for question 15
-# print('Output of question 15: ')
-# invest_travel(df, TRAVEL_FILE)
-# invest_activecases_ped(df, COVID_FILE)
-# invest_lockdown(df)
-# print('Plot of question 15 saved')
-# print('\n')
+# answer for question 15
+print('Output of question 15: ')
+invest_travel(df, TRAVEL_FILE)
+invest_activecases_ped(df, COVID_FILE)
+invest_lockdown(df)
+print('Plot of question 15 saved')
+print('\n')
