@@ -140,6 +140,7 @@ def pedestrian_scatter(dataframe, year1, year2, x_axis):
     daily_overall_2021.plot.scatter(
         x=x_axis, y="Hourly_Counts",
         title=x_axis + " vs pedestrian in " + str(year1))
+    plt.ylabel("Daily overall pedestrian count")
     plt.tight_layout()
     plt.savefig(str(year1) + '_scatter_plot_' + x_axis[:20] + '.png')
 
@@ -147,6 +148,7 @@ def pedestrian_scatter(dataframe, year1, year2, x_axis):
     daily_overall_2022.plot.scatter(
         x=x_axis, y="Hourly_Counts",
         title=x_axis + " vs pedestrian in " + str(year2))
+    plt.ylabel("Daily overall pedestrian count")
     plt.tight_layout()
     plt.savefig(str(year2) + '_scatter_plot_' + x_axis[:20] + '.png')
 
