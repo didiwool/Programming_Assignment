@@ -6,7 +6,8 @@ using the data from Hourly Counts Sensors from various points in the city, as we
 
 Python version: 3.9.10
 Required packages: pandas, numpy, collections, tabulate, matplotlib, sklearn, seaborn
-Run the file main.py and the results of each problem in the assignment will be either printed in the command line or saved to the relative path. 
+Run the file main.py and the results of each problem in the assignment will be either printed in the command line or saved to the relative path.
+For the test_case.py, there are four new csv files for testing.
 
 **Structure and Modules**
 
