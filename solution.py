@@ -859,6 +859,6 @@ def local_anomaly(dataframe, start_date, end_date="2022-05-31"):
     # Examples for demonstration
     if(start_date == "2021-01-01" and end_date == "2021-12-31"):
         plot_unusual(df_year=df_year, month="December", sensor=41)
-    elif(start_date == "2022-01-01"):
+    elif start_date == "2022-01-01":
         plot_unusual(df_year=df_year, month="April", sensor=3)
         plot_unusual(df_year=df_year, month="April", sensor=4)

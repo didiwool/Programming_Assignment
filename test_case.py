@@ -8,7 +8,7 @@ from helper import get_count_hourly, summary_hourly_count, \
     daily_count, diff_conclusion, find_extreme_item
 from solution import data_cleansing
 
-
+# import test files
 COUNT_TEST = "count_test.csv"
 RAIN_TEST = "rainfall_test.csv"
 TEMP_TEST = "temperature_test.csv"
@@ -23,7 +23,8 @@ class TestExtremeItem(unittest.TestCase):
         """
         test using a dictionary as input
         """
-        dictionary = {'Monday': 30, 'Tuesday': 10, 'Wednesday': 20, 'Thursday': 50}
+        dictionary = {
+            'Monday': 30, 'Tuesday': 10, 'Wednesday': 20, 'Thursday': 50}
         result = find_extreme_item(dictionary)
         self.assertEqual(result, ('Thursday', 'Tuesday'))
 
@@ -36,7 +37,6 @@ class TestExtremeItem(unittest.TestCase):
         self.assertEqual(result, ('', ''))
 
 
-
 class TestDataCleansing(unittest.TestCase):
     """
     test data_cleansing function in solution.py
@@ -45,13 +45,18 @@ class TestDataCleansing(unittest.TestCase):
         """
         test the correctness of function using new csv files
         """
-        dataframe = data_cleansing(COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
-        df_target = pd.DataFrame(columns=['ID', 'Date_Time', \
-            'Year', 'Month', 'Mdate', 'Day', 'Time', 'Sensor_ID', \
-            'Sensor_Name', 'Hourly_Counts', 'date_key', 'Rainfall amount (millimetres)', \
-            'Maximum temperature (Degree C)', 'Daily global solar exposure (MJ/m*m)'])
+        dataframe = data_cleansing(
+            COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
+        df_target = pd.DataFrame(columns=[
+            'ID', 'Date_Time',
+            'Year', 'Month', 'Mdate', 'Day', 'Time', 'Sensor_ID',
+            'Sensor_Name', 'Hourly_Counts', 'date_key',
+            'Rainfall amount (millimetres)',
+            'Maximum temperature (Degree C)',
+            'Daily global solar exposure (MJ/m*m)'])
         count_file = pd.read_csv(COUNT_TEST)
-        df_target[['ID', 'Date_Time', 'Year', 'Month', 'Mdate', 'Day', \
+        df_target[[
+            'ID', 'Date_Time', 'Year', 'Month', 'Mdate', 'Day',
             'Time', 'Sensor_ID', 'Sensor_Name', 'Hourly_Counts']] = count_file
         df_target['Date_Time'] = pd.to_datetime(df_target['Date_Time'])
         df_target['date_key'] = '202252'
@@ -76,18 +81,19 @@ class TestHourlyCount(unittest.TestCase):
         """
         test by input of 0am which is a valid input
         """
-        dataframe = data_cleansing(COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
+        dataframe = data_cleansing(
+            COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
         result = get_count_hourly(dataframe, 2022, 0)
         time = result.iloc[0]['Time'].astype(int)
 
         self.assertEqual(time, 0)
 
-
     def test_12_pm(self):
         """
         test by input of 12pm which is not a valid input
         """
-        dataframe = data_cleansing(COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
+        dataframe = data_cleansing(
+            COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
         with self.assertRaises(IndexError):
             get_count_hourly(dataframe, 2022, 24)
 
@@ -100,7 +106,8 @@ class TestSummaryHourlyCount(unittest.TestCase):
         """
         test the 'max' part of the output
         """
-        dataframe = data_cleansing(COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
+        dataframe = data_cleansing(
+            COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
         summary = summary_hourly_count(dataframe, 12).iloc[0]['max']
 
         self.assertEqual(summary, float(dataframe['Hourly_Counts'].sum()))
@@ -109,7 +116,8 @@ class TestSummaryHourlyCount(unittest.TestCase):
         """
         test the 'mean' part of the output
         """
-        dataframe = data_cleansing(COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
+        dataframe = data_cleansing(
+            COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
         summary = summary_hourly_count(dataframe, 12).iloc[0]['mean']
 
         self.assertEqual(summary, float(dataframe['Hourly_Counts'].sum()))
@@ -118,10 +126,10 @@ class TestSummaryHourlyCount(unittest.TestCase):
         """
         test with a wrong index name, should raise a key error
         """
-        dataframe = data_cleansing(COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
+        dataframe = data_cleansing(
+            COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
         with self.assertRaises(KeyError):
-            summary_hourly_count(dataframe, 12)
-
+            summary_hourly_count(dataframe, 12).iloc[0]['meaning']
 
 
 class TestDiffConclusion(unittest.TestCase):
@@ -136,7 +144,8 @@ class TestDiffConclusion(unittest.TestCase):
         dictionary = {'Monday': 10, 'Tuesday': 25, 'Wednesday': 30}
         with patch('builtins.print') as mocked_print:
             diff_conclusion(dictionary, 'Euclidean distance')
-            mocked_print.assert_called_with("Day with the "+
+            mocked_print.assert_called_with(
+                "Day with the " +
                 "least Euclidean distance is Monday, and the value is 10.")
 
     def test_pearson(self):
@@ -146,8 +155,10 @@ class TestDiffConclusion(unittest.TestCase):
         dictionary = {'Monday': 50, 'Tuesday': 25, 'Wednesday': 30}
         with patch('builtins.print') as mocked_print:
             diff_conclusion(dictionary, 'Pearson correlation coefficient')
-            mocked_print.assert_called_with("Day with the "+
-                "least Pearson correlation coefficient is Tuesday, and the value is 25.")
+            mocked_print.assert_called_with(
+                "Day with the " +
+                "least Pearson correlation coefficient is Tuesday, " +
+                "and the value is 25.")
 
 
 class TestDailyCount(unittest.TestCase):
@@ -158,13 +169,13 @@ class TestDailyCount(unittest.TestCase):
         """
         test the 'hourly counts' column after aggregation
         """
-        dataframe = data_cleansing(COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
+        dataframe = data_cleansing(
+            COUNT_TEST, RAIN_TEST, TEMP_TEST, SOLAR_TEST)
         df_new = daily_count(dataframe)
         df_new.drop('Day', axis=1, inplace=True)
         df_new = df_new.reset_index()
-        self.assertEqual(True, df_new['Hourly Counts'].equals(dataframe['Hourly_Counts']))
-
-
+        self.assertEqual(
+            True, df_new['Hourly Counts'].equals(dataframe['Hourly_Counts']))
 
 
 if __name__ == '__main__':
